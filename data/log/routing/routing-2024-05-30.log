@@ -1,0 +1,14 @@
+[30-May-2024 19:35:34 UTC] routing.INFO: Unable to find template "mod_page_password_forgot.html.twig" (looked into: /Applications/XAMPP/xamppfiles/htdocs/themes/tide/html_custom, /Applications/XAMPP/xamppfiles/htdocs/themes/tide/html, /Applications/XAMPP/xamppfiles/htdocs/modules/Page/html_client).  
+[30-May-2024 19:35:34 UTC] routing.INFO: La page /password/forgot n'a pas été trouvée  
+[30-May-2024 19:36:24 UTC] routing.INFO: Unable to find template "mod_page_password_reset_token.html.twig" (looked into: /Applications/XAMPP/xamppfiles/htdocs/themes/tide/html_custom, /Applications/XAMPP/xamppfiles/htdocs/themes/tide/html, /Applications/XAMPP/xamppfiles/htdocs/modules/Page/html_client).  
+[30-May-2024 19:36:24 UTC] routing.INFO: La page /password/reset/token n'a pas été trouvée  
+[30-May-2024 19:36:35 UTC] routing.INFO: Unable to find template "mod_page_password-reset_token.html.twig" (looked into: /Applications/XAMPP/xamppfiles/htdocs/themes/tide/html_custom, /Applications/XAMPP/xamppfiles/htdocs/themes/tide/html, /Applications/XAMPP/xamppfiles/htdocs/modules/Page/html_client).  
+[30-May-2024 19:36:35 UTC] routing.INFO: La page /password-reset/token n'a pas été trouvée  
+[30-May-2024 19:37:03 UTC] routing.INFO: Unable to find template "mod_page_password-reset_token.html.twig" (looked into: /Applications/XAMPP/xamppfiles/htdocs/themes/tide/html_custom, /Applications/XAMPP/xamppfiles/htdocs/themes/tide/html, /Applications/XAMPP/xamppfiles/htdocs/modules/Page/html_client).  
+[30-May-2024 19:37:03 UTC] routing.INFO: La page /password-reset/token n'a pas été trouvée  
+[30-May-2024 19:37:04 UTC] routing.INFO: Unable to find template "mod_page_password_reset_token.html.twig" (looked into: /Applications/XAMPP/xamppfiles/htdocs/themes/tide/html_custom, /Applications/XAMPP/xamppfiles/htdocs/themes/tide/html, /Applications/XAMPP/xamppfiles/htdocs/modules/Page/html_client).  
+[30-May-2024 19:37:04 UTC] routing.INFO: La page /password/reset/token n'a pas été trouvée  
+[30-May-2024 19:37:05 UTC] routing.INFO: Unable to find template "mod_page_password_forgot.html.twig" (looked into: /Applications/XAMPP/xamppfiles/htdocs/themes/tide/html_custom, /Applications/XAMPP/xamppfiles/htdocs/themes/tide/html, /Applications/XAMPP/xamppfiles/htdocs/modules/Page/html_client).  
+[30-May-2024 19:37:06 UTC] routing.INFO: La page /password/forgot n'a pas été trouvée  
+[30-May-2024 20:07:49 UTC] routing.INFO: Unable to find template "mod_page_favicon.ico" (looked into: /Applications/XAMPP/xamppfiles/htdocs/themes/tide/html_custom, /Applications/XAMPP/xamppfiles/htdocs/themes/tide/html, /Applications/XAMPP/xamppfiles/htdocs/modules/Page/html_client).  
+[30-May-2024 20:07:49 UTC] routing.INFO: La page /favicon.ico n'a pas été trouvée  

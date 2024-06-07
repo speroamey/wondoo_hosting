@@ -1,0 +1,101 @@
+[05-Jun-2024 07:22:45 UTC] event.INFO: Staff member 1 logged in  
+[05-Jun-2024 07:22:58 UTC] event.INFO: Updated system general settings  
+[05-Jun-2024 07:47:07 UTC] event.INFO: Updated system general settings  
+[05-Jun-2024 07:53:31 UTC] event.INFO: Updated system general settings  
+[05-Jun-2024 08:04:20 UTC] event.INFO: Updated system general settings  
+[05-Jun-2024 08:04:39 UTC] event.INFO: Updated system general settings  
+[05-Jun-2024 08:27:04 UTC] event.INFO: Updated system general settings  
+[05-Jun-2024 08:33:41 UTC] event.INFO: Updated extension "mod_system" configuration ["mod_system"] 
+[05-Jun-2024 09:27:28 UTC] event.INFO: Staff member 1 logged in  
+[05-Jun-2024 11:28:28 UTC] event.INFO: Staff member 1 logged in  
+[05-Jun-2024 11:39:47 UTC] event.INFO: Client #1 logged in [1] 
+[05-Jun-2024 11:48:48 UTC] event.INFO: Added "Starter" to shopping cart ["Starter"] 
+[05-Jun-2024 12:12:36 UTC] event.INFO: Added "Pro Plus" to shopping cart ["Pro Plus"] 
+[05-Jun-2024 12:13:25 UTC] event.INFO: Added "Basic" to shopping cart ["Basic"] 
+[05-Jun-2024 12:14:20 UTC] event.INFO: Added "Basic" to shopping cart ["Basic"] 
+[05-Jun-2024 12:15:26 UTC] event.INFO: Added "Basic" to shopping cart ["Basic"] 
+[05-Jun-2024 12:18:14 UTC] event.INFO: Added "Basic" to shopping cart ["Basic"] 
+[05-Jun-2024 12:53:21 UTC] event.INFO: Added "Pro Plus" to shopping cart ["Pro Plus"] 
+[05-Jun-2024 13:07:55 UTC] event.INFO: Added "Pro Plus" to shopping cart ["Pro Plus"] 
+[05-Jun-2024 13:08:09 UTC] event.INFO: Added "Pro Plus" to shopping cart ["Pro Plus"] 
+[05-Jun-2024 13:09:58 UTC] event.INFO: Added "Pro Plus" to shopping cart ["Pro Plus"] 
+[05-Jun-2024 13:15:12 UTC] event.INFO: Added "Pro Plus" to shopping cart ["Pro Plus"] 
+[05-Jun-2024 13:16:47 UTC] event.INFO: Added "Pro Plus" to shopping cart ["Pro Plus"] 
+[05-Jun-2024 13:17:23 UTC] event.INFO: Added "Pro Plus" to shopping cart ["Pro Plus"] 
+[05-Jun-2024 16:07:39 UTC] event.INFO: Added "Pro Plus" to shopping cart ["Pro Plus"] 
+[05-Jun-2024 16:07:47 UTC] event.INFO: Client #1 logged in [1] 
+[05-Jun-2024 16:08:08 UTC] event.INFO: Added "Pro Plus" to shopping cart ["Pro Plus"] 
+[05-Jun-2024 16:09:39 UTC] event.INFO: Staff member 1 logged in  
+[05-Jun-2024 16:11:14 UTC] event.INFO: Added "Pro Plus" to shopping cart ["Pro Plus"] 
+[05-Jun-2024 16:13:32 UTC] event.INFO: Added "Pro Plus" to shopping cart ["Pro Plus"] 
+[05-Jun-2024 16:13:49 UTC] event.INFO: Prepared new invoice "1" [1] 
+[05-Jun-2024 16:13:49 UTC] event.INFO: Approved invoice "1" ["1"] 
+[05-Jun-2024 16:13:49 UTC] event.INFO: Checked out shopping cart  
+[05-Jun-2024 16:16:43 UTC] event.INFO: Added "Pro Plus" to shopping cart ["Pro Plus"] 
+[05-Jun-2024 16:17:07 UTC] event.INFO: Prepared new invoice "2" [2] 
+[05-Jun-2024 16:17:07 UTC] event.INFO: Approved invoice "2" ["2"] 
+[05-Jun-2024 16:17:07 UTC] event.INFO: Checked out shopping cart  
+[05-Jun-2024 16:19:09 UTC] event.INFO: Added "Pro Plus" to shopping cart ["Pro Plus"] 
+[05-Jun-2024 16:23:45 UTC] event.INFO: Added "Pro Plus" to shopping cart ["Pro Plus"] 
+[05-Jun-2024 16:27:05 UTC] event.INFO: Prepared new invoice "3" [3] 
+[05-Jun-2024 16:27:05 UTC] event.INFO: Approved invoice "3" ["3"] 
+[05-Jun-2024 16:27:05 UTC] event.INFO: Checked out shopping cart  
+[05-Jun-2024 16:41:44 UTC] event.INFO: Added "Pro Plus" to shopping cart ["Pro Plus"] 
+[05-Jun-2024 16:41:59 UTC] event.INFO: Prepared new invoice "4" [4] 
+[05-Jun-2024 16:41:59 UTC] event.INFO: Approved invoice "4" ["4"] 
+[05-Jun-2024 16:41:59 UTC] event.INFO: Checked out shopping cart  
+[05-Jun-2024 16:43:09 UTC] event.INFO: Updated currency rates  
+[05-Jun-2024 16:43:09 UTC] event.INFO: Executed action to send invoice payment reminders  
+[05-Jun-2024 16:43:09 UTC] event.INFO: Executed action to invoke invoice due event  
+[05-Jun-2024 16:43:09 UTC] event.INFO: Executed action to suspend expired orders  
+[05-Jun-2024 16:43:09 UTC] event.INFO: Executed action to delete expired clients password reminders  
+[05-Jun-2024 16:43:09 UTC] event.INFO: Executed action to clear expired shopping carts from database  
+[05-Jun-2024 16:44:28 UTC] event.INFO: Removed invoice #4 [4] 
+[05-Jun-2024 16:44:28 UTC] event.INFO: Removed invoice #3 [3] 
+[05-Jun-2024 16:44:28 UTC] event.INFO: Removed invoice #2 [2] 
+[05-Jun-2024 16:44:28 UTC] event.INFO: Removed invoice #1 [1] 
+[05-Jun-2024 16:44:50 UTC] event.INFO: Deleted order #4 [4] 
+[05-Jun-2024 16:44:50 UTC] event.INFO: Deleted order #3 [3] 
+[05-Jun-2024 16:44:50 UTC] event.INFO: Deleted order #2 [2] 
+[05-Jun-2024 16:44:50 UTC] event.INFO: Deleted order #1 [1] 
+[05-Jun-2024 16:47:40 UTC] event.INFO: Added "Web Pro" to shopping cart ["Web Pro"] 
+[05-Jun-2024 16:47:50 UTC] event.INFO: Prepared new invoice "5" [5] 
+[05-Jun-2024 16:47:50 UTC] event.INFO: Approved invoice "5" ["5"] 
+[05-Jun-2024 16:47:50 UTC] event.INFO: Checked out shopping cart  
+[05-Jun-2024 16:51:20 UTC] event.INFO: Added "Basic" to shopping cart ["Basic"] 
+[05-Jun-2024 16:51:22 UTC] event.INFO: Prepared new invoice "6" [6] 
+[05-Jun-2024 16:51:22 UTC] event.INFO: Approved invoice "6" ["6"] 
+[05-Jun-2024 16:51:22 UTC] event.INFO: Checked out shopping cart  
+[05-Jun-2024 17:06:48 UTC] event.INFO: Updated profile  
+[05-Jun-2024 17:25:50 UTC] event.INFO: Approved invoice "6" [6] 
+[05-Jun-2024 17:25:50 UTC] event.INFO: Generated new renewal invoice #6 [6] 
+[05-Jun-2024 18:11:29 UTC] event.INFO: Staff member 1 logged in  
+[05-Jun-2024 18:20:54 UTC] event.INFO: Received transaction 1 from payment gateway 2 [1,"2"] 
+[05-Jun-2024 18:32:21 UTC] event.INFO: Added "Pro Plus" to shopping cart ["Pro Plus"] 
+[05-Jun-2024 18:32:37 UTC] event.INFO: Client #1 logged in [1] 
+[05-Jun-2024 18:32:49 UTC] event.INFO: Prepared new invoice "7" [7] 
+[05-Jun-2024 18:32:50 UTC] event.INFO: Approved invoice "7" ["7"] 
+[05-Jun-2024 18:32:50 UTC] event.INFO: Checked out shopping cart  
+[05-Jun-2024 18:39:22 UTC] event.INFO: Staff member 1 logged in  
+[05-Jun-2024 18:59:04 UTC] event.INFO: Updated currency rates  
+[05-Jun-2024 18:59:04 UTC] event.INFO: Executed action to send invoice payment reminders  
+[05-Jun-2024 18:59:04 UTC] event.INFO: Executed action to suspend expired orders  
+[05-Jun-2024 18:59:04 UTC] event.INFO: Executed action to delete expired clients password reminders  
+[05-Jun-2024 18:59:04 UTC] event.INFO: Executed action to clear expired shopping carts from database  
+[05-Jun-2024 19:40:56 UTC] event.INFO: Added "Web Pro" to shopping cart ["Web Pro"] 
+[05-Jun-2024 19:41:23 UTC] event.INFO: Prepared new invoice "8" [8] 
+[05-Jun-2024 19:41:23 UTC] event.INFO: Approved invoice "8" ["8"] 
+[05-Jun-2024 19:41:23 UTC] event.INFO: Checked out shopping cart  
+[05-Jun-2024 19:43:14 UTC] event.INFO: Received transaction 2 from payment gateway 2 [2,"2"] 
+[05-Jun-2024 19:43:17 UTC] event.INFO: Updated transaction #2 [2] 
+[05-Jun-2024 19:43:17 UTC] event.INFO: Updated transaction #2 [2] 
+[05-Jun-2024 19:43:17 UTC] event.INFO: Created subscription 1 [1] 
+[05-Jun-2024 19:43:17 UTC] event.INFO: Updated transaction #2 [2] 
+[05-Jun-2024 19:45:04 UTC] event.INFO: Received transaction 3 from payment gateway 2 [3,"2"] 
+[05-Jun-2024 19:45:06 UTC] event.INFO: Updated transaction #3 [3] 
+[05-Jun-2024 19:45:06 UTC] event.INFO: Updated transaction #3 [3] 
+[05-Jun-2024 19:45:06 UTC] event.INFO: Updated transaction #3 [3] 
+[05-Jun-2024 19:45:06 UTC] event.INFO: Updated transaction #3 [3] 
+[05-Jun-2024 19:45:06 UTC] event.INFO: Updated transaction #3 [3] 
+[05-Jun-2024 19:45:06 UTC] event.INFO: Marked invoice "8" as paid [8] 
+[05-Jun-2024 19:45:06 UTC] event.INFO: Cover invoice with client credits  

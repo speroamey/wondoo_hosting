@@ -1,0 +1,5 @@
+[30-May-2024 19:37:28 UTC] event.INFO: Client requested password reset. Sent to email ameyspero@gmail.com ["ameyspero@gmail.com"] 
+[30-May-2024 20:23:08 UTC] event.INFO: Client #2 signed up ["2"] 
+[30-May-2024 20:23:08 UTC] event.INFO: Client #2 logged in [2] 
+[30-May-2024 20:27:24 UTC] event.INFO: Client #2 logged in [2] 
+[30-May-2024 20:32:07 UTC] event.INFO: Client #2 logged in [2] 

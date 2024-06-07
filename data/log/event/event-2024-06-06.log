@@ -1,0 +1,20 @@
+[06-Jun-2024 04:42:42 UTC] event.DEBUG: onBeforeClientLogin [{"email":"administration@mowondoo.com","password":"Password2024","remember":"on","ip":"::1"}] 
+[06-Jun-2024 04:42:42 UTC] event.DEBUG: onEventClientLoginFailed [{"email":"administration@mowondoo.com","password":"Password2024","remember":"on","ip":"::1"}] 
+[06-Jun-2024 04:42:49 UTC] event.DEBUG: onBeforeClientLogin [{"email":"ameyspero@gmail.com","password":"Password2024","remember":"on","ip":"::1"}] 
+[06-Jun-2024 04:42:49 UTC] event.DEBUG: onAfterClientLogin [{"id":1,"ip":"::1"}] 
+[06-Jun-2024 04:42:49 UTC] event.INFO: Client #1 logged in [1] 
+[06-Jun-2024 05:08:32 UTC] event.DEBUG: onBeforeAdminLogin [{"email":"administration@mowondoo.com","ip":"::1"}] 
+[06-Jun-2024 05:08:33 UTC] event.DEBUG: onAfterAdminLogin [{"id":1,"ip":"::1"}] 
+[06-Jun-2024 05:08:33 UTC] event.INFO: Staff member 1 logged in  
+[06-Jun-2024 05:08:56 UTC] event.DEBUG: onBeforeAdminSettingsUpdate [{"company_name":"Wondoo Ltd","company_email":"administration@mowondoo.com","company_tel":"61725134","company_address_1":"128 City Road","company_address_2":"Demo address line 2","company_address_3":"Demo address line 3","company_logo":"themes/tide/assets/img/logo.png","company_logo_dark":"themes/huraga/assets/img/logo_white.svg","company_favicon":"themes/huraga/assets/favicon.ico","company_number":"","company_vat_number":"","company_bank_name":"","company_bic":"","company_account_number":"","hide_version_public":"1","hide_company_public":"1","company_signature":"Mowondoo.com - Website Management, Web & Domains Hosting Platform"}] 
+[06-Jun-2024 05:08:56 UTC] event.DEBUG: onAfterAdminSettingsUpdate [null] 
+[06-Jun-2024 05:08:56 UTC] event.INFO: Updated system general settings  
+[06-Jun-2024 18:53:24 UTC] event.DEBUG: onBeforeAdminLogin [{"email":"administration@mowondoo.com","ip":"::1"}] 
+[06-Jun-2024 18:53:25 UTC] event.DEBUG: onAfterAdminLogin [{"id":1,"ip":"::1"}] 
+[06-Jun-2024 18:53:25 UTC] event.INFO: Staff member 1 logged in  
+[06-Jun-2024 18:53:40 UTC] event.DEBUG: onBeforeAdminSettingsUpdate [{"company_name":"Wondoo Ltd","company_email":"administration@mowondoo.com","company_tel":"61725134","company_address_1":"128 City Road","company_address_2":"Demo address line 2","company_address_3":"Demo address line 3","company_logo":"themes/tide/assets/img/logo.svg","company_logo_dark":"themes/huraga/assets/img/logo_white.svg","company_favicon":"themes/huraga/assets/favicon.ico","company_number":"","company_vat_number":"","company_bank_name":"","company_bic":"","company_account_number":"","hide_version_public":"1","hide_company_public":"1","company_signature":"Mowondoo.com - Website Management, Web & Domains Hosting Platform"}] 
+[06-Jun-2024 18:53:40 UTC] event.DEBUG: onAfterAdminSettingsUpdate [null] 
+[06-Jun-2024 18:53:40 UTC] event.INFO: Updated system general settings  
+[06-Jun-2024 19:13:27 UTC] event.DEBUG: onBeforeClientLogin [{"email":"ameyspero@gmail.com","password":"Password2024","remember":"on","ip":"::1"}] 
+[06-Jun-2024 19:13:28 UTC] event.DEBUG: onAfterClientLogin [{"id":1,"ip":"::1"}] 
+[06-Jun-2024 19:13:28 UTC] event.INFO: Client #1 logged in [1] 

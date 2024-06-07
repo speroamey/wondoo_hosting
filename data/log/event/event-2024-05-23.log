@@ -1,0 +1,5 @@
+[23-May-2024 08:31:44 UTC] event.INFO: Staff member 1 logged in  
+[23-May-2024 09:09:51 UTC] event.INFO: Client #1 signed up ["1"] 
+[23-May-2024 09:09:52 UTC] event.INFO: Client #1 logged in [1] 
+[23-May-2024 09:51:42 UTC] event.INFO: Client #1 logged in [1] 
+[23-May-2024 10:03:25 UTC] event.INFO: Updated extension "mod_wysiwyg" configuration ["mod_wysiwyg"] 
