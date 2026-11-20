@@ -83,4 +83,3 @@ ln -sfn /opt/wondoo/releases/RELEASE_ID /opt/wondoo/current
 ```
 
 Then reload PHP-FPM and verify the public URL.
-
