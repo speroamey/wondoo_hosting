@@ -8,6 +8,8 @@ Thumbs.db
 /data/uploads/
 /data/private/
 stats/
+!modules/Stats/
+!modules/Stats/**
 debug_html_output.html
 
 # Secrets and environment-specific configuration

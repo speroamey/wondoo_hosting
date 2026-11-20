@@ -36,6 +36,10 @@ jobs:
             echo "Required source file library/FOSSBilling/Config.php is missing from the checkout; ensure it is committed and not ignored." >&2
             exit 1
           }
+          test -f modules/Stats/Api/Admin.php || {
+            echo "Required module file modules/Stats/Api/Admin.php is missing from the checkout; ensure it is committed and not ignored." >&2
+            exit 1
+          }
           for asset in \
             themes/admin_default/assets/build/css/fossbilling.css \
             themes/admin_default/assets/build/css/vendor.css \
