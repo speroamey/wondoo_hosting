@@ -43,7 +43,7 @@ sudo mkdir -p /opt/wondoo/shared/config /opt/wondoo/shared/data /opt/wondoo/rele
 sudo chown -R deploy:deploy /opt/wondoo
 sudo chmod 755 /opt/wondoo /opt/wondoo/releases
 sudo chown deploy:www-data /opt/wondoo/shared/config
-sudo chmod 2750 /opt/wondoo/shared/config
+sudo chmod 2750 /opt/wondoo/shared/config 
 ```
 
 Replace `www-data` with the actual PHP-FPM group. The deploy user must own this directory; the setgid bit makes new files inherit the PHP-FPM group. The workflow installs `config.php` with mode `640` and does not attempt a privileged group change.
