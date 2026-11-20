@@ -194,14 +194,17 @@ jobs:
             fi
           done
           port="${DEPLOY_PORT:-22}"
-          scp -P "$port" -i ~/.ssh/deploy_key dist/fossbilling.tar.gz "$DEPLOY_USER@$DEPLOY_HOST:/tmp/fossbilling.tar.gz"
+          archive_name=".fossbilling-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.tar.gz"
+          scp -P "$port" -i ~/.ssh/deploy_key dist/fossbilling.tar.gz "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/$archive_name"
           ssh -p "$port" -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" \
-            "DEPLOY_PATH='$DEPLOY_PATH' HEALTH_URL='$HEALTH_URL' GITHUB_SHA='$GITHUB_SHA' bash -s" <<'REMOTE'
+            "DEPLOY_PATH='$DEPLOY_PATH' ARCHIVE_NAME='$archive_name' HEALTH_URL='$HEALTH_URL' GITHUB_SHA='$GITHUB_SHA' bash -s" <<'REMOTE'
           set -e
+          archive="$DEPLOY_PATH/$ARCHIVE_NAME"
+          trap 'rm -f "$archive"' EXIT
           release="releases/$(date -u +%Y%m%d%H%M%S)-${GITHUB_SHA:-manual}"
           mkdir -p "$DEPLOY_PATH" "$DEPLOY_PATH/releases" "$DEPLOY_PATH/shared/data" "$DEPLOY_PATH/shared/config"
           mkdir -p "$DEPLOY_PATH/$release"
-          tar -xzf /tmp/fossbilling.tar.gz -C "$DEPLOY_PATH/$release"
+          tar -xzf "$archive" -C "$DEPLOY_PATH/$release"
 
           rm -rf "$DEPLOY_PATH/$release/data"
           ln -s "$DEPLOY_PATH/shared/data" "$DEPLOY_PATH/$release/data"
@@ -227,12 +230,10 @@ jobs:
                 ln -sfn "$(readlink -f "$DEPLOY_PATH/previous")" "$DEPLOY_PATH/current.next"
                 mv -Tf "$DEPLOY_PATH/current.next" "$DEPLOY_PATH/current"
               fi
-              rm -f /tmp/fossbilling.tar.gz
               echo "Health check failed; deployment was rolled back" >&2
               exit 1
             fi
           fi
-          rm -f /tmp/fossbilling.tar.gz
 
           kept="$(find "$DEPLOY_PATH/releases" -mindepth 1 -maxdepth 1 -type d | sort | tail -n 5)"
           find "$DEPLOY_PATH/releases" -mindepth 1 -maxdepth 1 -type d | sort | while read -r old; do
