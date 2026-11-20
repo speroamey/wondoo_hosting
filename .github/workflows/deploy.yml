@@ -194,12 +194,12 @@ jobs:
             fi
           done
           port="${DEPLOY_PORT:-22}"
-          archive_name=".fossbilling-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.tar.gz"
-          scp -P "$port" -i ~/.ssh/deploy_key dist/fossbilling.tar.gz "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/$archive_name"
+          archive_path="/tmp/.fossbilling-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.tar.gz"
+          scp -P "$port" -i ~/.ssh/deploy_key dist/fossbilling.tar.gz "$DEPLOY_USER@$DEPLOY_HOST:$archive_path"
           ssh -p "$port" -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" \
-            "DEPLOY_PATH='$DEPLOY_PATH' ARCHIVE_NAME='$archive_name' HEALTH_URL='$HEALTH_URL' GITHUB_SHA='$GITHUB_SHA' bash -s" <<'REMOTE'
+            "DEPLOY_PATH='$DEPLOY_PATH' ARCHIVE_PATH='$archive_path' HEALTH_URL='$HEALTH_URL' GITHUB_SHA='$GITHUB_SHA' bash -s" <<'REMOTE'
           set -e
-          archive="$DEPLOY_PATH/$ARCHIVE_NAME"
+          archive="$ARCHIVE_PATH"
           trap 'rm -f "$archive"' EXIT
           release="releases/$(date -u +%Y%m%d%H%M%S)-${GITHUB_SHA:-manual}"
           mkdir -p "$DEPLOY_PATH" "$DEPLOY_PATH/releases" "$DEPLOY_PATH/shared/data" "$DEPLOY_PATH/shared/config"
@@ -221,6 +221,22 @@ jobs:
             previous_release="$(readlink -f "$DEPLOY_PATH/current")"
             ln -sfn "$previous_release" "$DEPLOY_PATH/previous"
           fi
+
+          # ISPConfig keeps the website document root fixed at DEPLOY_PATH. Route
+          # requests internally to the active release while keeping deployment
+          # data inaccessible over HTTP. The release retains FOSSBilling's own
+          # .htaccess file for application routing and security rules.
+          cat > "$DEPLOY_PATH/.htaccess" <<'HTACCESS'
+          Options -Indexes +SymLinksIfOwnerMatch
+          <IfModule mod_rewrite.c>
+              RewriteEngine On
+              RewriteRule ^(?:releases|shared)(?:/|$) - [F,NC,L]
+              RewriteCond %{THE_REQUEST} \s/+current(?:/|\?|\s) [NC]
+              RewriteRule ^current(?:/|$) - [F,NC,L]
+              RewriteRule ^current(?:/|$) - [L]
+              RewriteRule ^(.*)$ current/$1 [QSA,L]
+          </IfModule>
+          HTACCESS
 
           ln -sfn "$DEPLOY_PATH/$release" "$DEPLOY_PATH/current.next"
           mv -Tf "$DEPLOY_PATH/current.next" "$DEPLOY_PATH/current"
