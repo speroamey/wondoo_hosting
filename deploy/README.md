@@ -37,8 +37,9 @@ The public key must be in `~/.ssh/authorized_keys` on the server.
 ## Server preparation
 
 ```bash
-sudo mkdir -p /opt/wondoo/shared/config /opt/wondoo/shared/data
+sudo mkdir -p /opt/wondoo/shared/config /opt/wondoo/shared/data /opt/wondoo/releases
 sudo chown -R deploy:deploy /opt/wondoo
+sudo chmod 755 /opt/wondoo /opt/wondoo/releases
 ```
 
 Create `/opt/wondoo/shared/config/config.php` from `config-sample.php`, with production database credentials and absolute runtime paths:

@@ -86,6 +86,42 @@ jobs:
             exit 1
           fi
 
+      - name: Check deployment directory permissions
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          set -e
+          port="${DEPLOY_PORT:-22}"
+          ssh -p "$port" -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" \
+            "DEPLOY_PATH='$DEPLOY_PATH' bash -s" <<'REMOTE'
+          set -e
+          case "$DEPLOY_PATH" in
+            /*) ;;
+            *) echo "DEPLOY_PATH must be an absolute path." >&2; exit 1 ;;
+          esac
+
+          if [ ! -d "$DEPLOY_PATH" ]; then
+            parent="$(dirname "$DEPLOY_PATH")"
+            if [ ! -d "$parent" ] || [ ! -w "$parent" ]; then
+              echo "Cannot create DEPLOY_PATH=$DEPLOY_PATH: parent $parent is not writable by $(id -un). Configure DEPLOY_PATH under the deploy user's home, or have the server administrator create and assign it to the deploy user." >&2
+              exit 1
+            fi
+            mkdir -p "$DEPLOY_PATH"
+          fi
+
+          for path in "$DEPLOY_PATH" "$DEPLOY_PATH/releases" "$DEPLOY_PATH/shared" "$DEPLOY_PATH/shared/data" "$DEPLOY_PATH/shared/config"; do
+            if [ -e "$path" ] && [ ! -w "$path" ]; then
+              echo "Deployment path is not writable: $path (SSH user: $(id -un)). Have the server administrator assign this directory to the deploy user, or update DEPLOY_PATH to a writable location." >&2
+              exit 1
+            fi
+          done
+
+          mkdir -p "$DEPLOY_PATH/releases" "$DEPLOY_PATH/shared/data" "$DEPLOY_PATH/shared/config"
+          REMOTE
+
       - name: Deploy with release rotation and rollback
         env:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
@@ -102,7 +138,6 @@ jobs:
             fi
           done
           port="${DEPLOY_PORT:-22}"
-          scp -P "$port" -i ~/.ssh/deploy_key dist/fossbilling.tar.gz "$DEPLOY_USER@$DEPLOY_HOST:/tmp/fossbilling.tar.gz"
           ssh -p "$port" -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" \
             "DEPLOY_PATH='$DEPLOY_PATH' HEALTH_URL='$HEALTH_URL' GITHUB_SHA='$GITHUB_SHA' bash -s" <<'REMOTE'
           set -e
