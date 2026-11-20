@@ -16,6 +16,7 @@ debug_html_output.html
 !.env.example
 config.php
 config.old.php
+!library/FOSSBilling/Config.php
 
 # PHP tooling
 *.log
