@@ -133,53 +133,46 @@ jobs:
         run: |
           set -e
           port="${DEPLOY_PORT:-22}"
-          config_status="$(ssh -p "$port" -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" \
-            "DEPLOY_PATH='$DEPLOY_PATH' bash -s" <<'REMOTE'
-          if [ -f "$DEPLOY_PATH/shared/config/config.php" ]; then
-            php -l "$DEPLOY_PATH/shared/config/config.php" >/dev/null || {
-              echo "Existing production config.php is invalid PHP." >&2
+          config_file="$RUNNER_TEMP/config.php"
+          remote_tmp="/tmp/wondoo-config-${GITHUB_RUN_ID}.php"
+
+          if [ -n "${DEPLOY_CONFIG_PHP:-}" ]; then
+            printf '%s' "$DEPLOY_CONFIG_PHP" > "$config_file"
+            chmod 600 "$config_file"
+            php -l "$config_file"
+            scp -P "$port" -i ~/.ssh/deploy_key "$config_file" "$DEPLOY_USER@$DEPLOY_HOST:$remote_tmp"
+          fi
+
+          ssh -p "$port" -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" \
+            "DEPLOY_PATH='$DEPLOY_PATH' CONFIG_TMP='$remote_tmp' CONFIG_GROUP='${DEPLOY_WEB_GROUP:-www-data}' HAS_CONFIG_SECRET='${DEPLOY_CONFIG_PHP:+yes}' bash -s" <<'REMOTE'
+          set -e
+          config="$DEPLOY_PATH/shared/config/config.php"
+          if [ -f "$config" ]; then
+            php -l "$config" >/dev/null || {
+              echo "Existing production config.php is invalid PHP; refusing to replace it." >&2
               exit 1
             }
-            printf 'CONFIG_PRESENT\n'
+
+            if [ "${HAS_CONFIG_SECRET:-}" = yes ] && cmp -s "$CONFIG_TMP" "$config"; then
+              # Repair a partial first-install file only when it exactly matches the
+              # supplied secret; install inherits the setgid config directory group.
+              install -m 640 "$CONFIG_TMP" "$config"
+            else
+              echo "Production config already exists and is valid; preserving it."
+            fi
           else
-            printf 'CONFIG_MISSING\n'
-          fi
-          REMOTE
-          )"
-
-          case "$config_status" in
-            *CONFIG_PRESENT*)
-              echo "Production config already exists and is valid; leaving it unchanged."
-              exit 0
-              ;;
-            *CONFIG_MISSING*) ;;
-            *)
-              echo "Could not determine whether production config.php exists." >&2
+            if [ "${HAS_CONFIG_SECRET:-}" != yes ]; then
+              echo "Missing $config. Set DEPLOY_CONFIG_PHP in the production GitHub Environment." >&2
               exit 1
-              ;;
-          esac
+            fi
+            install -m 640 "$CONFIG_TMP" "$config"
+          fi
 
-          if [ -z "${DEPLOY_CONFIG_PHP:-}" ]; then
-            echo "Missing $DEPLOY_PATH/shared/config/config.php and DEPLOY_CONFIG_PHP is not configured in the production GitHub Environment." >&2
+          if [ "$(stat -c '%G' "$config")" != "$CONFIG_GROUP" ]; then
+            echo "Config group is '$(stat -c '%G' "$config")', expected '$CONFIG_GROUP'. Set the shared config directory's group and setgid bit; the deployment user cannot chown files." >&2
             exit 1
           fi
 
-          config_file="$RUNNER_TEMP/config.php"
-          printf '%s' "$DEPLOY_CONFIG_PHP" > "$config_file"
-          chmod 600 "$config_file"
-          php -l "$config_file"
-
-          remote_tmp="/tmp/wondoo-config-${GITHUB_RUN_ID}.php"
-          scp -P "$port" -i ~/.ssh/deploy_key "$config_file" "$DEPLOY_USER@$DEPLOY_HOST:$remote_tmp"
-          ssh -p "$port" -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" \
-            "DEPLOY_PATH='$DEPLOY_PATH' CONFIG_TMP='$remote_tmp' CONFIG_GROUP='${DEPLOY_WEB_GROUP:-www-data}' bash -s" <<'REMOTE'
-          set -e
-          config="$DEPLOY_PATH/shared/config/config.php"
-          if [ ! -f "$config" ]; then
-            install -m 640 -g "$CONFIG_GROUP" "$CONFIG_TMP" "$config"
-          else
-            echo "Production config appeared during deploy; preserving existing file."
-          fi
           rm -f "$CONFIG_TMP"
           php -l "$config"
           REMOTE
