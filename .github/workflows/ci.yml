@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [master, main, develop]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, intl, mysql, pdo_mysql, soap, curl
+          coverage: none
+
+      - name: Validate PHP syntax
+        shell: bash
+        run: |
+          set -e
+          find library modules themes -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+
+      - name: Verify no runtime secrets are tracked
+        shell: bash
+        run: |
+          test ! -f config.php
+          test ! -f .env
+          if git grep -n -E '(DB_PASS|ISP_PASSWORD)=[^[:space:]]+' -- ':!*.example' ':!.github/workflows/*'; then
+            echo 'Potential secret found in source.'
+            exit 1
+          fi
+
+      - name: Build deployment archive
+        shell: bash
+        run: |
+          mkdir -p dist
+          tar \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='.DS_Store' \
+            --exclude='.env' \
+            --exclude='.env.*' \
+            --exclude='config.php' \
+            --exclude='config.old.php' \
+            --exclude='data/cache' \
+            --exclude='data/log' \
+            --exclude='data/uploads' \
+            --exclude='stats' \
+            -czf dist/fossbilling.tar.gz .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fossbilling-build
+          path: dist/fossbilling.tar.gz
+          if-no-files-found: error

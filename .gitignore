@@ -1,0 +1,27 @@
+# Local/system
+.DS_Store
+Thumbs.db
+
+# Application runtime data
+/data/cache/
+/data/log/
+/data/uploads/
+/data/private/
+stats/
+debug_html_output.html
+
+# Secrets and environment-specific configuration
+.env
+.env.*
+!.env.example
+config.php
+config.old.php
+
+# PHP tooling
+*.log
+.phpunit.result.cache
+
+# IDE/local tools
+.vscode/
+.idea/
+.qodo/

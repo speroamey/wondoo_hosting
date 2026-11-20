@@ -1,0 +1,140 @@
+<main class="wondoo-home">
+  <section class="wondoo-hero" aria-labelledby="wondoo-home-title">
+    <div class="wondoo-container wondoo-hero-layout">
+      <div class="wondoo-hero-copy">
+        <p class="wondoo-eyebrow"><span aria-hidden="true"></span> HÉBERGEMENT WEB • WONDOO</p>
+        <h1 id="wondoo-home-title">Votre site mérite un hébergement à la hauteur de vos idées.</h1>
+        <p class="wondoo-hero-description">Choisissez une offre adaptée à votre projet et gérez vos services depuis un espace client simple et centralisé.</p>
+        <div class="wondoo-hero-actions">
+          <a class="wondoo-button wondoo-button-primary" href="{{ 'order'|url }}">Découvrir les offres <span aria-hidden="true">→</span></a>
+          {% if not client %}
+            <a class="wondoo-button wondoo-button-secondary" href="{{ 'signup'|url }}">Créer un compte</a>
+          {% endif %}
+        </div>
+        <ul class="wondoo-benefits" aria-label="Services inclus dans l’espace client">
+          <li><span aria-hidden="true">✓</span> Hébergement web</li>
+          <li><span aria-hidden="true">✓</span> PHP &amp; MySQL</li>
+          <li><span aria-hidden="true">✓</span> Gestion en ligne</li>
+        </ul>
+      </div>
+
+      <div class="wondoo-hero-visual" aria-label="Aperçu des services Wondoo">
+        <div class="wondoo-visual-orbit wondoo-visual-orbit-one" aria-hidden="true"></div>
+        <div class="wondoo-visual-orbit wondoo-visual-orbit-two" aria-hidden="true"></div>
+        <div class="wondoo-service-panel">
+          <div class="wondoo-panel-topline"><span class="wondoo-panel-mark" aria-hidden="true">W</span><span>ESPACE CLIENT WONDOO</span><span class="wondoo-panel-menu" aria-hidden="true">•••</span></div>
+          <p class="wondoo-panel-title">Tout pour votre présence en ligne</p>
+          <div class="wondoo-service-row">
+            <span class="wondoo-service-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/><path d="M7 7h.01M7 17h.01M11 7h6M11 17h6"/></svg>
+            </span>
+            <span><strong>Hébergement</strong><small>Une offre pour votre projet</small></span><span class="wondoo-row-arrow" aria-hidden="true">↗</span>
+          </div>
+          <div class="wondoo-service-row">
+            <span class="wondoo-service-icon wondoo-service-icon-orange" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4zM8 9h8M8 13h5M8 17h3"/><path d="m15 15 2 2 4-5"/></svg>
+            </span>
+            <span><strong>Commandes</strong><small>Vos services au même endroit</small></span><span class="wondoo-row-arrow" aria-hidden="true">↗</span>
+          </div>
+          <div class="wondoo-service-row">
+            <span class="wondoo-service-icon wondoo-service-icon-blue" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M4 5h16v11H8l-4 4z"/><path d="M8 9h8M8 12h5"/></svg>
+            </span>
+            <span><strong>Assistance</strong><small>Retrouvez vos demandes de support</small></span><span class="wondoo-row-arrow" aria-hidden="true">↗</span>
+          </div>
+          <div class="wondoo-panel-footer"><span aria-hidden="true"></span> Votre espace, vos services, simplement.</div>
+        </div>
+        <span class="wondoo-hero-spark wondoo-hero-spark-one" aria-hidden="true">✦</span>
+        <span class="wondoo-hero-spark wondoo-hero-spark-two" aria-hidden="true">✧</span>
+      </div>
+    </div>
+    <a class="wondoo-scroll-cue" href="#wondoo-offres"><span aria-hidden="true">↓</span> Découvrir les offres</a>
+  </section>
+
+  <section class="wondoo-plans" id="wondoo-offres" aria-labelledby="wondoo-plans-title">
+    <div class="wondoo-container">
+      <header class="wondoo-section-heading">
+        <p class="wondoo-eyebrow wondoo-eyebrow-dark"><span aria-hidden="true"></span> DES OFFRES CLAIRES</p>
+        <h2 id="wondoo-plans-title">Choisissez l’offre qui vous correspond</h2>
+        <p>Comparez les offres d’hébergement disponibles et choisissez celle qui convient à votre site.</p>
+      </header>
+
+      <div class="wondoo-plan-grid">
+        {% for product in guest.product_get_list.list %}
+          {% if product.type == 'planethoster' or product.type == 'hosting' %}
+            <article class="wondoo-plan-card{% if loop.index == 2 %} wondoo-plan-card-featured{% endif %}">
+              {% if loop.index == 2 %}<span class="wondoo-plan-ribbon">À découvrir</span>{% endif %}
+              <div class="wondoo-plan-heading">
+                <span class="wondoo-plan-symbol" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/><path d="M7 7h.01M7 17h.01M11 7h6M11 17h6"/></svg>
+                </span>
+                <h3>{{ product.title }}</h3>
+              </div>
+              <div class="wondoo-plan-description">{{ product.description|markdown_to_html }}</div>
+
+              {% if product.features %}
+                <ul class="wondoo-plan-features">
+                  {% for feature in product.features %}
+                    <li><span aria-hidden="true">✓</span><span>{{ feature|striptags }}</span></li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+
+              <div class="wondoo-plan-price">
+                {% if product.pricing.type == 'free' %}
+                  <strong>Gratuit</strong>
+                {% elseif product.pricing.type == 'once' %}
+                  <strong>{{ (product.pricing.once.price * guest.cart_get_currency.conversion_rate) | format_currency(guest.cart_get_currency.code) }}</strong><span>paiement unique</span>
+                {% elseif product.pricing.type == 'recurrent' %}
+                  {% set display_price = null %}
+                  {% set display_period = null %}
+                  {% for period_code, period_price in product.pricing.recurrent %}
+                    {% if display_price is null and period_price.enabled %}
+                      {% set display_price = period_price %}
+                      {% set display_period = period_code %}
+                    {% endif %}
+                  {% endfor %}
+                  {% if display_price %}
+                    {% set periods = guest.system_periods %}
+                    <strong>{{ (display_price.price * guest.cart_get_currency.conversion_rate) | format_currency(guest.cart_get_currency.code) }}</strong><span>{{ periods[display_period] }}</span>
+                  {% else %}
+                    <strong>Voir le tarif</strong><span>à la commande</span>
+                  {% endif %}
+                {% else %}
+                  <strong>Voir le tarif</strong><span>dans le détail de l’offre</span>
+                {% endif %}
+              </div>
+
+              <a class="wondoo-plan-cta" href="{{ 'orderbutton'|url(query: { 'order': product.id, 'show_custom_form_values': request.show_custom_form_values }) }}">
+                Choisir cette offre <span aria-hidden="true">→</span>
+              </a>
+            </article>
+          {% endif %}
+        {% endfor %}
+      </div>
+      <p class="wondoo-plan-note">Les détails et les options de facturation sont affichés avant la validation de la commande.</p>
+    </div>
+  </section>
+
+  <section class="wondoo-how" aria-labelledby="wondoo-how-title">
+    <div class="wondoo-container">
+      <header class="wondoo-section-heading wondoo-section-heading-light">
+        <p class="wondoo-eyebrow"><span aria-hidden="true"></span> SIMPLE À CHAQUE ÉTAPE</p>
+        <h2 id="wondoo-how-title">Votre projet, en trois étapes</h2>
+      </header>
+      <div class="wondoo-step-grid">
+        <article class="wondoo-step-card"><span class="wondoo-step-number">01</span><h3>Choisissez votre offre</h3><p>Parcourez les formules disponibles et sélectionnez celle qui répond à vos besoins.</p></article>
+        <article class="wondoo-step-card"><span class="wondoo-step-number">02</span><h3>Configurez votre commande</h3><p>Suivez les étapes de commande directement dans votre espace Wondoo.</p></article>
+        <article class="wondoo-step-card"><span class="wondoo-step-number">03</span><h3>Gérez vos services</h3><p>Retrouvez vos services, vos commandes et vos demandes de support dans votre compte.</p></article>
+      </div>
+      <div class="wondoo-how-cta"><a class="wondoo-button wondoo-button-light" href="{{ 'order'|url }}">Voir les offres <span aria-hidden="true">→</span></a></div>
+    </div>
+  </section>
+
+  <section class="wondoo-final-cta" aria-labelledby="wondoo-final-title">
+    <div class="wondoo-container wondoo-final-inner">
+      <div><p class="wondoo-eyebrow wondoo-eyebrow-dark"><span aria-hidden="true"></span> PRÊT À COMMENCER ?</p><h2 id="wondoo-final-title">Faites avancer votre projet en ligne.</h2><p>Choisissez votre offre ou connectez-vous à votre espace client.</p></div>
+      <div class="wondoo-final-actions"><a class="wondoo-button wondoo-button-primary" href="{{ 'order'|url }}">Découvrir les offres <span aria-hidden="true">→</span></a><a class="wondoo-text-link" href="{{ 'login'|url }}">Déjà client ? Se connecter</a></div>
+    </div>
+  </section>
+</main>

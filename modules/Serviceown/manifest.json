@@ -1,0 +1,7 @@
+{
+  "id": "serviceown",
+  "type": "mod",
+  "name": "Module feature hook",
+  "description": "Own module for adding feature to other module or hooks..",
+  "version": "1.0.0"
+}

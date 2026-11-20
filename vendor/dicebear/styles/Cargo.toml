@@ -1,0 +1,155 @@
+[package]
+name = "dicebear-styles"
+version = "10.6.0"
+edition = "2021"
+description = "Definition files of the DiceBear avatar styles."
+repository = "https://github.com/dicebear/styles"
+homepage = "https://www.dicebear.com"
+keywords = ["dicebear", "avatar", "svg"]
+authors = ["Florian Körner <contact@florian-koerner.com>"]
+readme = "README.md"
+# The styles are individually licensed (see LICENSE.md / each file's `meta`), so
+# there is no single SPDX expression. Point at the per-style license list
+# instead, like the other manifests do.
+license-file = "LICENSE.md"
+
+# Pure-data crate: ship the committed source styles (not the gitignored, npm-only
+# `dist/`) plus the thin shim. `cargo publish` only bundles files under the
+# package root, so the JSON must live here — which it does.
+include = ["/src/*.json", "/styles.rs", "/LICENSE.md", "/README.md"]
+
+[lib]
+# `src/` holds the JSON data, so the crate root can't be the default `src/lib.rs`;
+# the shim lives at the repo root as `styles.rs`, next to the Go shim `styles.go`.
+path = "styles.rs"
+
+[features]
+# No style is compiled in by default — opt in per style to keep binaries small.
+default = []
+# Convenience: pull in every style.
+all = [
+  "adventurer",
+  "adventurer-neutral",
+  "avataaars",
+  "avataaars-neutral",
+  "big-ears",
+  "big-ears-neutral",
+  "big-smile",
+  "blobs",
+  "bottts",
+  "bottts-neutral",
+  "cameo",
+  "clay",
+  "constellation",
+  "critters",
+  "croodles",
+  "croodles-neutral",
+  "cutouts",
+  "disco",
+  "dylan",
+  "fun-emoji",
+  "gaze",
+  "glass",
+  "glyphs",
+  "icons",
+  "identicon",
+  "initial-face",
+  "initials",
+  "landscape",
+  "line-face",
+  "loops",
+  "lorelei",
+  "lorelei-neutral",
+  "marbles",
+  "micah",
+  "miniavs",
+  "moods",
+  "notionists",
+  "notionists-neutral",
+  "open-peeps",
+  "patchwork",
+  "personas",
+  "pixel-art",
+  "pixel-art-neutral",
+  "pixelbot",
+  "planets",
+  "rings",
+  "shadows",
+  "shape-grid",
+  "shapes",
+  "slice",
+  "sprouts",
+  "squircles",
+  "stack",
+  "stripes",
+  "thumbs",
+  "toon-head",
+  "triangles",
+  "voxel-art",
+  "voxel-bot",
+  "waves",
+  "weave",
+]
+
+# One feature per style. `dicebear-styles = { features = ["shapes", "bottts"] }`
+adventurer = []
+adventurer-neutral = []
+avataaars = []
+avataaars-neutral = []
+big-ears = []
+big-ears-neutral = []
+big-smile = []
+blobs = []
+bottts = []
+bottts-neutral = []
+cameo = []
+clay = []
+constellation = []
+critters = []
+croodles = []
+croodles-neutral = []
+cutouts = []
+disco = []
+dylan = []
+fun-emoji = []
+gaze = []
+glass = []
+glyphs = []
+icons = []
+identicon = []
+initial-face = []
+initials = []
+landscape = []
+line-face = []
+loops = []
+lorelei = []
+lorelei-neutral = []
+marbles = []
+micah = []
+miniavs = []
+moods = []
+notionists = []
+notionists-neutral = []
+open-peeps = []
+patchwork = []
+personas = []
+pixel-art = []
+pixel-art-neutral = []
+pixelbot = []
+planets = []
+rings = []
+shadows = []
+shape-grid = []
+shapes = []
+slice = []
+sprouts = []
+squircles = []
+stack = []
+stripes = []
+thumbs = []
+toon-head = []
+triangles = []
+voxel-art = []
+voxel-bot = []
+waves = []
+weave = []

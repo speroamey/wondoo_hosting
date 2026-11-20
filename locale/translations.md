@@ -1,0 +1,45 @@
+## FOSSBilling Translations
+Dated: Sat Oct 17 11:45:05 UTC 2026
+Translation Tag: [pot-0a501d87a5f713fa2b2ec077b81631f46a2031e4f3a659aaf5bd8ada3c731714](https://github.com/FOSSBilling/locale/releases/tag/pot-0a501d87a5f713fa2b2ec077b81631f46a2031e4f3a659aaf5bd8ada3c731714)
+ - `de_DE`: ▰▰▰▱▱▱▱▱▱▱ 37% translated
+ - `fa_IR`: ▰▰▰▱▱▱▱▱▱▱ 37% translated
+ - `ca_ES`: ▰▰▱▱▱▱▱▱▱▱ 24% translated (excluded, too incomplete)
+ - `hu_HU`: ▰▰▰▱▱▱▱▱▱▱ 33% translated
+ - `bn_BD`: ▱▱▱▱▱▱▱▱▱▱ 1% translated (excluded, too incomplete)
+ - `uk_UA`: ▰▰▰▱▱▱▱▱▱▱ 32% translated
+ - `he_IL`: ▱▱▱▱▱▱▱▱▱▱ 2% translated (excluded, too incomplete)
+ - `bg_BG`: ▰▰▱▱▱▱▱▱▱▱ 29% translated
+ - `ar_SA`: ▰▰▰▱▱▱▱▱▱▱ 32% translated
+ - `si_LK`: ▱▱▱▱▱▱▱▱▱▱ 1% translated (excluded, too incomplete)
+ - `hr_HR`: ▰▱▱▱▱▱▱▱▱▱ 15% translated (excluded, too incomplete)
+ - `ar_EG`: ▱▱▱▱▱▱▱▱▱▱ 4% translated (excluded, too incomplete)
+ - `tr_TR`: ▰▰▰▰▱▱▱▱▱▱ 49% translated
+ - `sv_SE`: ▰▱▱▱▱▱▱▱▱▱ 11% translated (excluded, too incomplete)
+ - `ta_IN`: ▱▱▱▱▱▱▱▱▱▱ 0% translated (excluded, too incomplete)
+ - `id_ID`: ▰▰▰▱▱▱▱▱▱▱ 32% translated
+ - `no_NO`: ▱▱▱▱▱▱▱▱▱▱ 0% translated (excluded, too incomplete)
+ - `en_GB`: ▰▰▰▱▱▱▱▱▱▱ 34% translated
+ - `zh_TW`: ▰▰▱▱▱▱▱▱▱▱ 29% translated
+ - `pt_BR`: ▰▰▰▰▰▰▰▰▰▰ 100% translated
+ - `cs_CZ`: ▰▰▰▱▱▱▱▱▱▱ 35% translated
+ - `th_TH`: ▰▰▰▰▱▱▱▱▱▱ 49% translated
+ - `sl_SI`: ▱▱▱▱▱▱▱▱▱▱ 0% translated (excluded, too incomplete)
+ - `vi_VN`: ▰▰▰▱▱▱▱▱▱▱ 33% translated
+ - `fi_FI`: ▰▰▱▱▱▱▱▱▱▱ 29% translated
+ - `el_GR`: ▰▰▰▱▱▱▱▱▱▱ 32% translated
+ - `ru_RU`: ▰▰▰▰▰▰▰▰▰▱ 99% translated
+ - `da_DK`: ▰▱▱▱▱▱▱▱▱▱ 12% translated (excluded, too incomplete)
+ - `zh_CN`: ▰▰▰▱▱▱▱▱▱▱ 36% translated
+ - `pl_PL`: ▰▰▰▱▱▱▱▱▱▱ 32% translated
+ - `ko_KR`: ▱▱▱▱▱▱▱▱▱▱ 1% translated (excluded, too incomplete)
+ - `es_ES`: ▰▰▰▰▱▱▱▱▱▱ 40% translated
+ - `fr_FR`: ▰▰▰▱▱▱▱▱▱▱ 37% translated
+ - `it_IT`: ▰▰▰▰▱▱▱▱▱▱ 40% translated
+ - `ro_RO`: ▰▰▰▱▱▱▱▱▱▱ 36% translated
+ - `pt_PT`: ▰▰▱▱▱▱▱▱▱▱ 28% translated
+ - `nl_NL`: ▰▰▰▱▱▱▱▱▱▱ 37% translated
+ - `en_AU`: ▰▰▰▱▱▱▱▱▱▱ 37% translated
+ - `uz_UZ`: ▰▰▰▰▱▱▱▱▱▱ 47% translated
+ - `lt_LT`: ▰▰▱▱▱▱▱▱▱▱ 29% translated
+ - `sr_RS`: ▰▰▰▱▱▱▱▱▱▱ 33% translated
+ - `ja_JP`: ▱▱▱▱▱▱▱▱▱▱ 1% translated (excluded, too incomplete)

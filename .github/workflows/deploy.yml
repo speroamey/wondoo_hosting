@@ -1,0 +1,117 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, intl, mysql, pdo_mysql, soap, curl
+          coverage: none
+
+      - name: Validate application
+        run: |
+          set -e
+          find library modules themes -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+          test ! -f config.php
+
+      - name: Build release archive
+        run: |
+          mkdir -p dist
+          tar \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='.DS_Store' \
+            --exclude='.env' \
+            --exclude='.env.*' \
+            --exclude='config.php' \
+            --exclude='config.old.php' \
+            --exclude='data/cache' \
+            --exclude='data/log' \
+            --exclude='data/uploads' \
+            --exclude='stats' \
+            -czf dist/fossbilling.tar.gz .
+
+      - name: Install SSH key
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy with release rotation and rollback
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          HEALTH_URL: ${{ vars.HEALTH_URL }}
+        run: |
+          set -e
+          port="${DEPLOY_PORT:-22}"
+          scp -P "$port" -i ~/.ssh/deploy_key dist/fossbilling.tar.gz "$DEPLOY_USER@$DEPLOY_HOST:/tmp/fossbilling.tar.gz"
+          ssh -p "$port" -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" \
+            "DEPLOY_PATH='$DEPLOY_PATH' HEALTH_URL='$HEALTH_URL' GITHUB_SHA='$GITHUB_SHA' bash -s" <<'REMOTE'
+          set -e
+          release="releases/$(date -u +%Y%m%d%H%M%S)-${GITHUB_SHA:-manual}"
+          mkdir -p "$DEPLOY_PATH" "$DEPLOY_PATH/releases" "$DEPLOY_PATH/shared/data" "$DEPLOY_PATH/shared/config"
+          mkdir -p "$DEPLOY_PATH/$release"
+          tar -xzf /tmp/fossbilling.tar.gz -C "$DEPLOY_PATH/$release"
+
+          rm -rf "$DEPLOY_PATH/$release/data"
+          ln -s "$DEPLOY_PATH/shared/data" "$DEPLOY_PATH/$release/data"
+
+          if [ -f "$DEPLOY_PATH/shared/config/config.php" ]; then
+            ln -s "$DEPLOY_PATH/shared/config/config.php" "$DEPLOY_PATH/$release/config.php"
+          else
+            echo "Missing $DEPLOY_PATH/shared/config/config.php" >&2
+            exit 1
+          fi
+
+          if [ -L "$DEPLOY_PATH/current" ] && [ -e "$DEPLOY_PATH/current" ]; then
+            ln -sfn "$DEPLOY_PATH/current" "$DEPLOY_PATH/previous"
+          fi
+
+          ln -sfn "$DEPLOY_PATH/$release" "$DEPLOY_PATH/current.next"
+          mv -Tf "$DEPLOY_PATH/current.next" "$DEPLOY_PATH/current"
+
+          php -l "$DEPLOY_PATH/$release/index.php"
+          if [ -n "$HEALTH_URL" ]; then
+            if ! curl --fail --silent --show-error --location --max-time 20 "$HEALTH_URL" >/dev/null; then
+              if [ -L "$DEPLOY_PATH/previous" ] && [ -e "$DEPLOY_PATH/previous" ]; then
+                ln -sfn "$(readlink -f "$DEPLOY_PATH/previous")" "$DEPLOY_PATH/current.next"
+                mv -Tf "$DEPLOY_PATH/current.next" "$DEPLOY_PATH/current"
+              fi
+              rm -f /tmp/fossbilling.tar.gz
+              echo "Health check failed; deployment was rolled back" >&2
+              exit 1
+            fi
+          fi
+          rm -f /tmp/fossbilling.tar.gz
+
+          kept="$(find "$DEPLOY_PATH/releases" -mindepth 1 -maxdepth 1 -type d | sort | tail -n 5)"
+          find "$DEPLOY_PATH/releases" -mindepth 1 -maxdepth 1 -type d | sort | while read -r old; do
+            if ! printf '%s\n' "$kept" | grep -Fxq "$old"; then rm -rf "$old"; fi
+          done
+          REMOTE

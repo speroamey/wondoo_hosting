@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+      <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+      <title>{% block meta_title %}{{ settings.meta_title }}{% endblock %}</title>
+      <meta name="msapplication-TileColor" content=""/>
+      <meta name="theme-color" content=""/>
+      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+      <meta name="apple-mobile-web-app-capable" content="yes"/>
+      <meta name="mobile-web-app-capable" content="yes"/>
+      <meta name="HandheldFriendly" content="True"/>
+      <meta name="MobileOptimized" content="320"/>
+      <link rel="icon" href="{{ guest.system_company.favicon_url }}" type="image/x-icon"/>
+      <link rel="shortcut icon" href="{{ guest.system_company.favicon_url }}" type="image/x-icon"/>
+      <meta name="description" content="{% block meta_description %}{{ settings.meta_description }}{% endblock %}"/>
+      <meta name="robots" content="{{ settings.meta_robots }}">
+      <meta name="author" content="{{ settings.meta_author }}">
+      <meta name="generator" content="FOSSBilling {{ FOSSBillingVersion }}">
+      <meta name="canonical" content="{{ constant('SYSTEM_URL') }}">
+      {% block opengraph %}{% endblock %}
+      <!-- CSS files -->
+      <link href="{{ 'css/tabler.min.css' | asset_url }}" rel="stylesheet"/>
+      <link href="{{ 'css/tabler-flags.min.css' | asset_url }}" rel="stylesheet"/>
+      <link href="{{ 'css/tabler-payments.min.css' | asset_url }}" rel="stylesheet"/>
+      <link href="{{ 'css/tabler-vendors.min.css' | asset_url }}" rel="stylesheet"/>
+	  <link href="{{ 'css/custom.css' | asset_url }}" rel="stylesheet"/>
+      {% block head %}{% endblock %}
+      {% block js %}{% endblock %}
+   </head>
+   <body class="{% block body_class %}{% endblock %}">
+      {% block body %}{% endblock %}
+      {% include 'partial_pending_messages.html.twig' ignore missing %}
+      <script src="{{ 'js/fossbilling.js' | public_asset_url }}" defer></script>
+      <script src="{{ 'js/api.js' | public_asset_url }}" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta19/dist/js/tabler.min.js" defer></script>
+      <script>
+      document.addEventListener('DOMContentLoaded', function () {
+          if (!window.FOSSBilling || !FOSSBilling.ui) return;
+          FOSSBilling.ui.notify = function (message, type) {
+              var feedback = document.getElementById('own-domain-check-feedback');
+              var action = document.querySelector('input[name="domain[action]"]:checked');
+
+              if (type === 'error' && feedback && action && action.value === 'owndomain') {
+                  feedback.textContent = String(message).replace(/\s*\(9999\)\s*$/, '').trim();
+                  feedback.className = 'form-text text-danger';
+
+                  var sld = document.querySelector('input[name="domain[owndomain_sld]"]');
+                  var tld = document.querySelector('input[name="domain[owndomain_tld]"]');
+                  if (sld) sld.classList.add('is-invalid');
+                  if (tld) tld.classList.add('is-invalid');
+                  if (feedback.scrollIntoView) feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                  return;
+              }
+
+              if (type === 'success') {
+                  if (feedback) {
+                      feedback.textContent = '';
+                      feedback.className = 'form-text';
+                  }
+                  return;
+              }
+
+              console[type === 'error' ? 'error' : 'info'](message);
+          };
+      });
+      </script>
+   </body>
+</html>

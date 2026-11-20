@@ -1,0 +1,12 @@
+{
+    "id":           "servicemulticraft",
+    "type":         "mod",
+    "name":         "Multicraft",
+    "icon_url":     "icon.png",
+    "version":      "0.1.0",
+    "description":  "Provides automatic Multicraft server provisioning for BoxBilling.",
+    "homepage_url": "https://www.multicraft.org/",
+    "author":       "Multicraft",
+    "author_url":   "https://www.multicraft.org/",
+    "license":      "Proprietary"
+}

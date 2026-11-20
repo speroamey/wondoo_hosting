@@ -1,0 +1,39 @@
+{#
+ *
+ *   Copyright © 2010-2024 by xhost.ch GmbH
+ *
+ *   All rights reserved.
+ *
+ #}
+
+<form method="post" action="admin/order/update" class="api-form save" data-api-msg="{{ 'Settings updated'|trans }}">
+<div class="card-body">
+
+<div class="mb-3 row">
+    <label class="col-md-3 col-form-label">{{ 'Multicraft Server ID'|trans }}</label>
+    <div class="col-md-3">
+        <input type="text" class="form-control" name="meta[server_id]" value="{{ order.meta.server_id }}" placeholder="{{ 'The server ID in the Multicraft panel'|trans }}">
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="col-md-3 col-form-label">
+        {{ 'Server Address'|trans }}
+        <br/>
+        <span style="font-size: 0.8em">{{ '(changes will not apply in the panel)'|trans }}</span>
+    </label>
+    <div class="col-md-3">
+        <input type="text" class="form-control" name="meta[server_ip]" value="{{ order.meta.server_ip }}">
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <div class="col-md-3 offset-md-3">
+        <input type="submit" value="{{ 'Update'|trans }}" class="btn btn-primary">
+        <input type="hidden" name="id" value="{{ order.id }}">
+    </div>
+</div>
+
+</div>
+</form>
+

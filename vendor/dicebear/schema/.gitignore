@@ -1,0 +1,22 @@
+.idea
+.DS_Store
+dist
+dist-python
+node_modules
+
+/target
+Cargo.lock
+
+# Note: .pubignore replaces this file for `dart pub publish` (that's what lets
+# the generated /lib ship). It is an allowlist of what the pub package
+# contains, so entries here never affect the package.
+.dart_tool
+pubspec.lock
+/lib
+
+# .NET build output of DiceBear.Schema.csproj (the package is data-only, so
+# there is nothing generated here that needs committing) and the directory the
+# publish workflow packs the .nupkg into.
+bin
+obj
+dist-nuget

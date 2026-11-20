@@ -1,0 +1,235 @@
+{#
+ *
+ *   Copyright © 2010-2024 by xhost.ch GmbH
+ *
+ *   All rights reserved.
+ *
+ #}
+
+{% import 'macro_functions.html.twig' as mf %}
+
+<div class="card-body">
+<h5>{{ 'Multicraft Product Settings'|trans }}</h5>
+<form method="post" action="{{ 'api/admin/product/update_config'|link }}" class="api-form save" data-api-msg="{{ 'Settings updated'|trans }}">
+<input type="hidden" name="CSRFToken" value="{{ CSRFToken }}"/>
+
+<div class="mb-3 row">
+    <label class="form-label col-3 col-form-label">{{ 'Player Slots'|trans }}:</label>
+    <div class="col-md-3">
+        <input class="form-control" type="text" name="config[players]" value="{{ product.config.players }}">
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="form-label col-3 col-form-label">{{ 'Memory (MB)'|trans }}:</label>
+    <div class="col-md-3">
+        <input class="form-control" type="text" name="config[memory]" value="{{ product.config.memory }}">
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="form-label col-3 col-form-label">{{ 'Dedicated IP'|trans }}:</label>
+    <div class="col-md-3">
+        <select class="form-select" name="config[dedicated_ip]">
+            <option value="no"{% if product.config.dedicated_ip == 'no' %} selected="selected"{% endif %}>{{ 'Use shared IP'|trans }}</option>
+            <option value="available"{% if product.config.dedicated_ip == 'available' %} selected="selected"{% endif %}>{{ 'Dedicated IP if available'|trans }}</option>
+            <option value="yes"{% if product.config.dedicated_ip == 'yes' %} selected="selected"{% endif %}>{{ 'Require dedicated IP'|trans }}</option>
+        </select>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="form-label col-3 col-form-label">{{ 'JAR File'|trans }}:</label>
+    <div class="col-md-3">
+        <input class="form-control" type="text" name="config[jarfile]" value="{{ product.config.jarfile }}">
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="form-label col-3 col-form-label">{{ 'Server Name'|trans }}:</label>
+    <div class="col-md-3">
+        <input class="form-control" type="text" name="config[name]" value="{{ product.config.name }}">
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="form-label col-md-3 col-form-label">{{ 'Look for JARs in'|trans }}:</label>
+    <div class="col-md-3">
+        <select class="form-select" name="config[jardir]">
+            <option value="daemon"{% if product.config.jardir == 'daemon' %} selected="selected"{% endif %}>{{ 'Daemon JAR directory'|trans }}</option>
+            <option value="server"{% if product.config.jardir == 'server' %} selected="selected"{% endif %}>{{ 'Server JAR directory'|trans }}</option>
+            <option value="server_base"{% if product.config.jardir == 'server_base' %} selected="selected"{% endif %}>{{ 'Server base directory'|trans }}</option>
+        </select>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="form-label col-md-3 col-form-label">{{ 'Server Visibility'|trans }}:</label>
+    <div class="col-md-3">
+        <select class="form-select" name="config[visible]">
+            <option value="0"{% if product.config.visible == '0' %} selected="selected"{% endif %}>{{ 'Owner only'|trans }}</option>
+            <option value="1"{% if product.config.visible == '1' %} selected="selected"{% endif %}>{{ 'By Default Role'|trans }}</option>
+            <option value="2"{% if product.config.visible == '2' %} selected="selected"{% endif %}>{{ 'Users with Roles only'|trans }}</option>
+        </select>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="form-label col-md-3 col-form-label">{{ 'Default Role'|trans }}:</label>
+    <div class="col-md-3">
+        <select class="form-select" name="config[default_level]">
+            <option value="0"{% if product.config.default_level == '0' %} selected="selected"{% endif %}>{{ 'No Access'|trans }}</option>
+            <option value="10"{% if product.config.default_level == '' or product.config.default_level == '10' %} selected="selected"{% endif %}>{{ 'Guest'|trans }}</option>
+            <option value="20"{% if product.config.default_level == '20' %} selected="selected"{% endif %}>{{ 'User'|trans }}</option>
+            <option value="30"{% if product.config.default_level == '30' %} selected="selected"{% endif %}>{{ 'Moderator'|trans }}</option>
+        </select>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="form-label col-md-3 col-form-label">{{ 'Template'|trans }}:</label>
+    <div class="col-md-3">
+        <input class="form-control" type="text" name="config[template]" value="{{ product.config.template }}">
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="form-label col-md-3 col-form-label">{{ 'Allowed Daemons'|trans }}:</label>
+    <div class="col-md-3">
+        <input class="form-control" type="text" name="config[allowed_daemons]" value="{{ product.config.allowed_daemons }}">
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label for="user_jar" class="form-label col-md-3 col-form-label">{{ 'Owner selectable JAR'|trans }}:</label>
+    <div class="col-md-3 d-flex align-items-center">
+        <input type="hidden" name="config[user_jar]" value="0"/>
+        <input class="form-check-input" type="checkbox" id="user_jar" name="config[user_jar]" value="1"{% if product.config.user_jar %} checked="checked"{% endif %}/>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label for="user_name" class="form-label col-md-3 col-form-label">{{ 'Owner can set Name'|trans }}:</label>
+    <div class="col-md-3 d-flex align-items-center">
+        <input type="hidden" name="config[user_name]" value="0"/>
+        <input class="form-check-input" type="checkbox" id="user_name" name="config[user_name]" value="1"{% if product.config.user_name %} checked="checked"{% endif %}/>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label for="user_schedule" class="form-label col-md-3 col-form-label">{{ 'Owner Scheduled Tasks'|trans }}:</label>
+    <div class="col-md-3 d-flex align-items-center">
+        <input type="hidden" name="config[user_schedule]" value="0"/>
+        <input class="form-check-input" type="checkbox" id="user_schedule" name="config[user_schedule]" value="1"{% if product.config.user_schedule %} checked="checked"{% endif %}/>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label for="user_ftp" class="form-label col-md-3 col-form-label">{{ 'Owner Managed FTP'|trans }}:</label>
+    <div class="col-md-3 d-flex align-items-center">
+        <input type="hidden" name="config[user_ftp]" value="0"/>
+        <input class="form-check-input" type="checkbox" id="user_ftp" name="config[user_ftp]" value="1"{% if product.config.user_ftp %} checked="checked"{% endif %}/>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label for="user_visibility" class="form-label col-md-3 col-form-label">{{ 'Owner Set Visibility'|trans }}:</label>
+    <div class="col-md-3 d-flex align-items-center">
+        <input type="hidden" name="config[user_visibility]" value="0"/>
+        <input class="form-check-input" type="checkbox" id="user_visibility" name="config[user_visibility]" value="1"{% if product.config.user_visibility %} checked="checked"{% endif %}/>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label for="user_players" class="form-label col-md-3 col-form-label">{{ 'Owner Set Player Count'|trans }}:</label>
+    <div class="col-md-3 d-flex align-items-center">
+        <input type="hidden" name="config[user_players]" value="0"/>
+        <input class="form-check-input" type="checkbox" id="user_players" name="config[user_players]" value="1"{% if product.config.user_players %} checked="checked"{% endif %}/>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label for="user_jardir" class="form-label col-md-3 col-form-label">{{ 'Owner Set JAR Directory'|trans }}:</label>
+    <div class="col-md-3 d-flex align-items-center">
+        <input type="hidden" name="config[user_jardir]" value="0"/>
+        <input class="form-check-input" type="checkbox" id="user_jardir" name="config[user_jardir]" value="1"{% if product.config.user_jardir %} checked="checked"{% endif %}/>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label for="user_templates" class="form-label col-md-3 col-form-label">{{ 'Owner Can Use Templates'|trans }}:</label>
+    <div class="col-md-3 d-flex align-items-center">
+        <input type="hidden" name="config[user_templates]" value="0"/>
+        <input class="form-check-input" type="checkbox" id="user_templates" name="config[user_templates]" value="1"{% if product.config.user_templates %} checked="checked"{% endif %}/>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label for="user_params" class="form-label col-md-3 col-form-label">{{ 'Owner Set Startup Parameters'|trans }}:</label>
+    <div class="col-md-3 d-flex align-items-center">
+        <input type="hidden" name="config[user_params]" value="0"/>
+        <input class="form-check-input" type="checkbox" id="user_params" name="config[user_params]" value="1"{% if product.config.user_params %} checked="checked"{% endif %}/>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label for="user_mysql" class="form-label col-md-3 col-form-label">{{ 'Owner Can Create MySQL DB'|trans }}:</label>
+    <div class="col-md-3 d-flex align-items-center">
+        <input type="hidden" name="config[user_mysql]" value="0"/>
+        <input class="form-check-input" type="checkbox" id="user_mysql" name="config[user_mysql]" value="1"{% if product.config.user_mysql %} checked="checked"{% endif %}/>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label for="autostart" class="form-label col-md-3 col-form-label">{{ 'Start Server'|trans }}:</label>
+    <div class="col-md-3 d-flex align-items-center">
+        <input type="hidden" name="config[autostart]" value="0"/>
+        <input class="form-check-input" type="checkbox" id="autostart" name="config[autostart]" value="1"{% if product.config.autostart %} checked="checked"{% endif %}/>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label for="create_ftp" class="form-label col-md-3 col-form-label">{{ 'Create FTP Account'|trans }}:</label>
+    <div class="col-md-3 d-flex align-items-center">
+        <input type="hidden" name="config[create_ftp]" value="0"/>
+        <input class="form-check-input" type="checkbox" id="create_ftp" name="config[create_ftp]" value="1"{% if product.config.create_ftp %} checked="checked"{% endif %}/>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="form-label col-md-3 col-form-label">{{ 'Delete Files on Terminate'|trans }}:</label>
+    <div class="col-md-3">
+        <input class="form-control" type="text" name="config[delete_worlds]" value="{{ product.config.delete_worlds }}" placeholder="{{ 'Type \'yes\' to delete on terminate'|trans }}">
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="form-label col-md-3 col-form-label">{{ 'Delete User on Terminate'|trans }}:</label>
+    <div class="col-md-3">
+        <input class="form-control" type="text" name="config[delete_user]" value="{{ product.config.delete_user }}" placeholder="{{ 'Type \'yes\' to delete user on terminate'|trans }}">
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="form-label col-md-3 col-form-label">{{ 'Disk Space Limit (MB)'|trans }}:</label>
+    <div class="col-md-3">
+        <input class="form-control" type="text" name="config[disk_quota]" value="{{ product.config.disk_quota }}">
+    </div>
+</div>
+
+
+<div class="mb-3 row">
+    <label for="user_crash_check" class="form-label col-md-3 col-form-label">{{ 'Owner Configurable Crash Detection'|trans }}:</label>
+    <div class="col-md-3 d-flex align-items-center">
+        <input type="hidden" name="config[user_crash_check]" value="0"/>
+        <input class="form-check-input" type="checkbox" id="user_crash_check" name="config[user_crash_check]" value="1"{% if product.config.user_crash_check %} checked="checked"{% endif %}/>
+    </div>
+</div>
+
+<input type="hidden" name="id" value="{{ product.id }}">
+<div class="card-footer text-end">
+    <input type="submit" value="{{ 'Update'|trans }}" class="btn btn-primary" onclick="window.onbeforeunload = null;">
+</div>
+</form>
+</div>
+

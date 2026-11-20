@@ -1,0 +1,158 @@
+{#
+ *
+ *   Copyright © 2010-2024 by xhost.ch GmbH
+ *
+ *   All rights reserved.
+ *
+ #}
+
+{% extends request.ajax ? "layout_blank.html.twig" : "layout_default.html.twig" %}
+{% import "macro_functions.html.twig" as mf %}
+
+{% block meta_title %}{{ 'Multicraft'|trans }}{% endblock %}
+{% set active_menu = 'system' %}
+
+{% block breadcrumbs %}
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        <a href="{{ '/'|alink }}">
+            <svg class="icon">
+                <use xlink:href="#home" />
+            </svg>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{{ 'system'|alink }}">{{ 'Settings'|trans }}</a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">{{ 'Multicraft settings'|trans }}</li>
+</ol>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="card">
+<div class="card-header">
+    <h3 class="card-title">{{ 'Multicraft settings'|trans }}</h3>
+</div>
+
+<form method="post" action="{{ 'api/admin/extension/config_save'|link }}" class="api-form" data-api-msg="{{ 'Configuration updated'|trans }}">
+<input type="hidden" name="CSRFToken" value="{{ CSRFToken }}">
+<div class="card-body">
+
+{% set params = admin.extension_config_get({ 'ext': 'mod_servicemulticraft' }) %}
+<div class="mb-3 row">
+    <label class="col-md-3 col-form-label">{{ 'Panel URL'|trans }}</label>
+    <div class="col-md-6">
+        <input class="form-control" type="text" name="url" value="{{ params.url }}">
+        <small class="form-hint">{{ 'The complete URL to your Multicraft installation, for example: http://example.com/multicraft/'|trans }}</small>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="col-md-3 col-form-label">{{ 'Multicraft Username'|trans }}</label>
+    <div class="col-md-6">
+        <input class="form-control" type="text" name="username" value="{{ params.username }}">
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="col-md-3 col-form-label">{{ 'Multicraft API Key'|trans }}</label>
+    <div class="col-md-6">
+        <input class="form-control" type="password" name="api_key" value="{{ params.api_key }}">
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="col-md-3 col-form-label">{{ 'List of dedicated IPs'|trans }}<br/><span style="font-size: 0.8em">{{ '(optional)'|trans }}</span></label>
+    <div class="col-md-6">
+        <textarea class="form-control" name="dedicated_ips" rows="5">{{ params.dedicated_ips }}</textarea>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="col-md-3 col-form-label">{{ 'Maximum Servers per Daemon'|trans }}<br/><span style="font-size: 0.8em">{{ '(optional)'|trans }}</span></label>
+    <div class="col-md-6">
+        <input class="form-control" type="text" name="max_per_daemon" value="{{ params.max_per_daemon }}">
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="col-md-3 col-form-label">{{ 'Shuffle Daemons'|trans }}<br/><span style="font-size: 0.8em">{{ '(When checking for available resources)'|trans }}</span></label>
+    <div class="col-md-6 d-flex align-items-center">
+        <input type="hidden" name="shuffle_daemons" value="0"/>
+        <input class="form-check-input" type="checkbox" id="shuffle_daemons" name="shuffle_daemons" value="1"{% if params.shuffle_daemons %} checked="checked"{% endif %}/>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="col-md-3 col-form-label">{{ 'Use Best Daemon'|trans }}<br/><span style="font-size: 0.8em">{{ '(Instead of using the first daemon with enough resources available)'|trans }}</span></label>
+    <div class="col-md-6 d-flex align-items-center">
+        <input type="hidden" name="shuffle_daemons" value="0"/>
+        <input class="form-check-input" type="checkbox" id="use_best_daemon" name="use_best_daemon" value="1"{% if params.use_best_daemon %} checked="checked"{% endif %}/>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="col-md-3 col-form-label">{{ 'Calculate used Memory'|trans }}</label>
+    <div class="col-md-6">
+        <select class="form-select" name="include_suspended">
+            <option value="exclude"{% if params.include_suspended == 'exclude' %} selected="selected"{% endif %}>{{ 'Exclude suspended'|trans }}</option>
+            <option value="include"{% if params.include_suspended == 'include' %} selected="selected"{% endif %}>{{ 'Include suspended'|trans }}</option>
+        </select>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="col-md-3 col-form-label">{{ 'Verbose Log'|trans }}</label>
+    <div class="col-md-6 d-flex align-items-center">
+        <input type="hidden" name="log_verbose" value="0"/>
+        <input class="form-check-input" type="checkbox" id="log_verbose" name="log_verbose" value="1"{% if params.log_verbose %} checked="checked"{% endif %}/>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="col-md-3 col-form-label">{{ 'Log API Calls'|trans }}</label>
+    <div class="col-md-6 d-flex align-items-center">
+        <input type="hidden" name="log_api" value="0"/>
+        <input class="form-check-input" type="checkbox" id="log_api" name="log_api" value="1"{% if params.log_api %} checked="checked"{% endif %}/>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label class="col-md-3 col-form-label">{{ 'Disable Logging'|trans }}</label>
+    <div class="col-md-6 d-flex align-items-center">
+        <input type="hidden" name="disable_logging" value="0"/>
+        <input class="form-check-input" type="checkbox" id="disable_logging" name="disable_logging" value="1"{% if params.disable_logging %} checked="checked"{% endif %}/>
+    </div>
+</div>
+
+<div class="card-footer text-end">
+    <input type="button" value="{{ 'Test connection'|trans }}" class="btn btn-success" id="tc"/>
+    <input type="submit" value="{{ 'Update'|trans }}" class="btn btn-primary" onclick="window.onbeforeunload = null;">
+    <input type="hidden" name="ext" value="mod_servicemulticraft" />
+</div>
+</form>
+
+</div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function() {
+    $('#tc').click(function() {
+        API.admin.post("servicemulticraft/test_connection", {}, function(response) {
+            if (Array.isArray(response) && response.length == 0)
+                bb.msg('{{ 'Successfully connected'|trans }}');
+            else
+                bb.error('{{ 'Error' }}', response);
+        }, function(error) {
+            bb.error('{{ 'Error' }}', error);
+        });
+        return false;
+    });
+});
+</script>
+{% endblock %}

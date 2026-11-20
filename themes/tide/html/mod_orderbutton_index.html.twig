@@ -1,0 +1,181 @@
+{% extends request.ajax ? "layout_blank.html.twig" : "layout_default.html.twig" %}
+{% import "macro_functions.html.twig" as mf %}
+{% block meta_title %}
+	{% if request.order matches '/^\\d+$/' %}
+		{{ 'Product Configuration'|trans }}
+	{% elseif request.checkout matches '/^\\d+$/' %}
+		{{ 'Cart'|trans }}
+	{% else %}
+		{{ 'Choose products we offer for selling'|trans }}
+	{% endif %}
+{% endblock %}
+{% set loader_nr = request.loader | default("8")%}
+{% set loader_url = ('img/assets/loaders/loader'~loader_nr~'.gif') %}
+{% block page_header %}
+	{% if request.order matches '/^\\d+$/' %}
+		{{ 'Product Configuration'|trans }}
+	{% elseif request.checkout matches '/^\\d+$/' %}
+		{{ 'Cart'|trans }}
+	{% else %}
+		{{ 'Select Product'|trans }}
+	{% endif %}
+{% endblock %}
+{% block page_subheader %}
+	{% if request.order matches '/^\\d+$/' %}
+		{% if guest.system_locale|slice(0, 2) == 'fr' %}Configurez votre produit{% else %}{{ 'Configure Your Product'|trans }}{% endif %}
+	{% elseif request.checkout matches '/^\\d+$/' %}
+		{{ 'Your Shopping Cart'|trans }}
+	{% else %}
+		{{ 'Choose products we offer for selling'|trans }}
+	{% endif %}
+{% endblock %}
+{% block breadcrumb %}
+	{% if request.order matches '/^\\d+$/' %}
+		<li class="breadcrumb-item">
+			<a href="{{ 'order' | url}}">{{ 'Order'|trans }}</a>
+		</li>
+		<li class="breadcrumb-item active" aria-current="page">
+			<a href="#">{{ 'Product Configuration'|trans }}</a>
+		</li>
+	{% elseif request.checkout matches '/^\\d+$/' %}
+		<li class="breadcrumb-item">
+			<a href="{{ 'order' | url}}">{{ 'Order'|trans }}</a>
+		</li>
+		<li class="breadcrumb-item active" aria-current="page">
+			<a href="#">{{ 'Cart'|trans }}</a>
+		</li>
+	{% endif %}
+{% endblock %}
+{% set loader_nr = request.loader | default("8")%}
+{% set loader_url = ('img/assets/loaders/loader'~loader_nr~'.gif') %}
+{% block body_class %}order-index{% if request.order matches '/^\\d+$/' %} order-config{% elseif request.checkout matches '/^\\d+$/' %} order-checkout{% endif %}{% endblock %}
+{% block content_before %}{% endblock %}
+{% block content %}
+	{% set products = guest.product_get_list %}
+	{% if request.order matches '/^\\d+$/' %}
+		{% include 'mod_orderbutton_product_configuration.html.twig' %}
+	{% endif %}
+	{% if request.checkout matches '/^\\d+$/' %}
+		{% include 'mod_orderbutton_checkout.html.twig' %}
+		{% if not client %}
+			{% include 'mod_orderbutton_client.html.twig' %}
+		{% endif %}
+	{% endif %}
+{% endblock %}
+{% block js %}
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const serialize = (form) => FOSSBilling.tools.serializeFormDataToObject(new FormData(form));
+			const refreshAfterLogin = () => {
+				FOSSBilling.ui.notify("{{ 'You logged in successfully'|trans|e('js') }}", 'success');
+				window.location.reload();
+			};
+
+			document.querySelectorAll('.accordion-body').forEach((body) => {
+				body.addEventListener('shown.bs.collapse', function () {
+					const iframe = document.getElementById('popup-iframe');
+					if (iframe) iframe.height = document.body.clientHeight;
+				});
+			});
+
+			document.querySelectorAll('.register-login a').forEach((link) => {
+				link.addEventListener('click', function (event) {
+					event.preventDefault();
+					bootstrap.Tab.getOrCreateInstance(link).show();
+				});
+			});
+
+			document.getElementById('client-login')?.addEventListener('submit', function (event) {
+				event.preventDefault();
+				FOSSBilling.api.guest.post('client/login', serialize(this), refreshAfterLogin);
+			});
+
+			document.getElementById('create-profile')?.addEventListener('submit', function (event) {
+				event.preventDefault();
+				FOSSBilling.api.guest.post('client/create', serialize(this), function () {
+					const email = document.getElementById('reg-email')?.value;
+					const password = document.getElementById('reg-password')?.value;
+					if (!email || !password) return;
+					FOSSBilling.api.guest.post('client/login', { email, password }, refreshAfterLogin);
+				});
+			});
+
+			document.getElementById('apply-promo')?.addEventListener('submit', function (event) {
+				event.preventDefault();
+				FOSSBilling.api.guest.post('cart/apply_promo', serialize(this), function () {
+					FOSSBilling.ui.notify("{{ 'Promo code was applied for your order'|trans|e('js') }}", 'success');
+					window.location.reload();
+				});
+			});
+
+			document.getElementById('show-promo-field')?.addEventListener('click', function (event) {
+				event.preventDefault();
+				const promoForm = document.getElementById('apply-promo');
+				if (promoForm) promoForm.style.display = 'block';
+				this.style.display = 'none';
+				document.getElementById('promocode')?.focus();
+			});
+
+			document.getElementById('checkout-form')?.addEventListener('submit', function (event) {
+				event.preventDefault();
+				const form = this;
+				const submitButton = form.querySelector('button[type="submit"]');
+				let feedback = document.getElementById('checkout-feedback');
+				if (!feedback) {
+					feedback = document.createElement('p');
+					feedback.id = 'checkout-feedback';
+					feedback.className = 'form-text text-danger mt-2';
+					feedback.setAttribute('role', 'alert');
+					feedback.setAttribute('aria-live', 'polite');
+					form.appendChild(feedback);
+				}
+
+				feedback.textContent = '';
+				if (submitButton) {
+					submitButton.disabled = true;
+					submitButton.setAttribute('aria-busy', 'true');
+				}
+
+				FOSSBilling.api.client.post('cart/checkout', serialize(form), function (result) {
+					if (submitButton) {
+						submitButton.disabled = false;
+						submitButton.removeAttribute('aria-busy');
+					}
+					if (!result.invoice_hash) {
+						window.top.location.href = '{{ "order/service/manage"|url }}' + '/' + result.order_id;
+						return;
+					}
+
+					FOSSBilling.api.guest.post('invoice/payment', {
+						hash: result.invoice_hash,
+						gateway_id: result.gateway_id,
+						auto_redirect: true
+					}, function (payment) {
+						const paymentInner = document.getElementById('payment-html-inner');
+						const paymentPanel = document.getElementById('payment-html');
+						if (!paymentInner || !paymentPanel) return;
+						if (payment.iframe) {
+							paymentInner.innerHTML = payment.result;
+							document.getElementById('checkout')?.remove();
+						} else {
+							const link = '{{ "invoice/banklink"|url }}' + '/' + result.invoice_hash + '/' + result.gateway_id;
+							paymentInner.innerHTML = '<a href="' + link + '" target="_parent" id="redirect-to-gateway">Redirect to payment gateway</a>';
+							document.getElementById('checkout-inner')?.remove();
+							paymentInner.querySelector('#redirect-to-gateway')?.click();
+						}
+						paymentPanel.hidden = false;
+					}, function (error) {
+						feedback.textContent = error.message || "{{ 'The payment could not be initialized.'|trans|e('js') }}";
+					});
+				}, function (error) {
+					if (submitButton) {
+						submitButton.disabled = false;
+						submitButton.removeAttribute('aria-busy');
+					}
+					feedback.textContent = error.message || "{{ 'The order could not be completed.'|trans|e('js') }}";
+					feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+				});
+			});
+		});
+	</script>
+{% endblock %}
