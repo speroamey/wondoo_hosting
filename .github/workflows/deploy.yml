@@ -54,12 +54,37 @@ jobs:
       - name: Install SSH key
         env:
           SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
         run: |
+          set -e
+
+          if [ -z "${SSH_KEY:-}" ]; then
+            echo "DEPLOY_SSH_KEY is missing from the production GitHub Environment." >&2
+            exit 1
+          fi
+          if [ -z "${DEPLOY_HOST:-}" ]; then
+            echo "DEPLOY_HOST is missing from the production GitHub Environment." >&2
+            exit 1
+          fi
+
+          port="${DEPLOY_PORT:-22}"
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
           printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts
+
+          if ! ssh-keygen -y -f ~/.ssh/deploy_key >/dev/null 2>&1; then
+            echo "DEPLOY_SSH_KEY is not a valid private SSH key." >&2
+            exit 1
+          fi
+
+          ssh-keyscan -T 15 -p "$port" -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2>/tmp/ssh-keyscan.log
+          if ! grep -q . ~/.ssh/known_hosts; then
+            cat /tmp/ssh-keyscan.log >&2
+            echo "Could not retrieve the SSH host key from $DEPLOY_HOST:$port." >&2
+            exit 1
+          fi
 
       - name: Deploy with release rotation and rollback
         env:
@@ -70,6 +95,12 @@ jobs:
           HEALTH_URL: ${{ vars.HEALTH_URL }}
         run: |
           set -e
+          for required in DEPLOY_HOST DEPLOY_USER DEPLOY_PATH; do
+            if [ -z "${!required:-}" ]; then
+              echo "$required is missing from the production GitHub Environment." >&2
+              exit 1
+            fi
+          done
           port="${DEPLOY_PORT:-22}"
           scp -P "$port" -i ~/.ssh/deploy_key dist/fossbilling.tar.gz "$DEPLOY_USER@$DEPLOY_HOST:/tmp/fossbilling.tar.gz"
           ssh -p "$port" -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" \
