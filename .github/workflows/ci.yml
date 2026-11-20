@@ -62,3 +62,4 @@ jobs:
           name: fossbilling-build
           path: dist/fossbilling.tar.gz
           if-no-files-found: error
+
