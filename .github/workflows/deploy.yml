@@ -249,7 +249,15 @@ jobs:
             done
           fi
 
-          # Keep ISPConfig's document root and its existing .htaccess untouched.
+          # A previous workflow version may have replaced the site's FOSSBilling
+          # rules with this temporary router. Restore the release's original rules
+          # only in that known case; otherwise preserve the site's .htaccess.
+          if [ -f "$DEPLOY_PATH/.htaccess" ] && grep -Fq 'RewriteRule ^(.*)$ current/$1 [QSA,L]' "$DEPLOY_PATH/.htaccess"; then
+            cp "$storage/$release/.htaccess" "$DEPLOY_PATH/.htaccess"
+            echo "Restored FOSSBilling .htaccess after removing the temporary current router."
+          fi
+
+          # Keep ISPConfig's document root and its original .htaccess unchanged.
           # Store releases outside the public web root, then expose application
           # entries as symlinks through the stable current pointer.
           shopt -s dotglob nullglob
