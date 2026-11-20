@@ -216,8 +216,10 @@ jobs:
             exit 1
           fi
 
+          previous_release=""
           if [ -L "$DEPLOY_PATH/current" ] && [ -e "$DEPLOY_PATH/current" ]; then
-            ln -sfn "$DEPLOY_PATH/current" "$DEPLOY_PATH/previous"
+            previous_release="$(readlink -f "$DEPLOY_PATH/current")"
+            ln -sfn "$previous_release" "$DEPLOY_PATH/previous"
           fi
 
           ln -sfn "$DEPLOY_PATH/$release" "$DEPLOY_PATH/current.next"
@@ -226,11 +228,14 @@ jobs:
           php -l "$DEPLOY_PATH/$release/index.php"
           if [ -n "$HEALTH_URL" ]; then
             if ! curl --fail --silent --show-error --location --max-time 20 "$HEALTH_URL" >/dev/null; then
-              if [ -L "$DEPLOY_PATH/previous" ] && [ -e "$DEPLOY_PATH/previous" ]; then
-                ln -sfn "$(readlink -f "$DEPLOY_PATH/previous")" "$DEPLOY_PATH/current.next"
+              if [ -n "$previous_release" ]; then
+                ln -sfn "$previous_release" "$DEPLOY_PATH/current.next"
                 mv -Tf "$DEPLOY_PATH/current.next" "$DEPLOY_PATH/current"
+                echo "Health check failed; restored previous release $previous_release." >&2
+              else
+                rm -f "$DEPLOY_PATH/current" "$DEPLOY_PATH/current.next"
+                echo "Health check failed; removed the first deployment's current symlink." >&2
               fi
-              echo "Health check failed; deployment was rolled back" >&2
               exit 1
             fi
           fi
