@@ -11,14 +11,14 @@ The source repository must not contain:
 - `data/uploads`, `data/cache`, `data/log`
 - `stats`, local debug output, IDE folders
 
-Runtime state is kept outside the release directory in:
+Runtime state and release files are kept outside the public web root, in ISPConfig's `private` directory:
 
-- `$DEPLOY_PATH/shared/data`
-- `$DEPLOY_PATH/shared/config/config.php`
+- `$DEPLOY_PATH/../private/data`
+- `$DEPLOY_PATH/../private/wondoo-deploy/shared/config/config.php`
 
-For ISPConfig, set `DEPLOY_PATH` to the website's existing `web` directory (for example, `/var/www/clients/client0/web11/web`). ISPConfig keeps that document root fixed. The workflow installs a root `.htaccess` that internally routes requests to `current` and denies HTTP access to `releases` and `shared`; each release keeps FOSSBilling's own `.htaccess`.
+For ISPConfig, set `DEPLOY_PATH` to the website's existing `web` directory (for example, `/var/www/clients/client0/web11/web`). ISPConfig keeps that document root fixed. **The workflow leaves the existing root `.htaccess` untouched.** It stores releases in `private/wondoo-deploy` and exposes the application files through symlinks in `web`, with `current` as the active-release pointer. Ensure any custom files in `web` whose names collide with application files are backed up; deployment replaces those paths with symlinks.
 
-Each release is immutable and linked through `$DEPLOY_PATH/current`.
+Each release is immutable and linked through `$DEPLOY_PATH/../private/wondoo-deploy/current`.
 
 ## GitHub Environment: production
 
@@ -40,19 +40,19 @@ The public key must be in `~/.ssh/authorized_keys` on the server. For this ISPCo
 
 ## Server preparation
 
-For ISPConfig, the deployment account must be able to write to the website's `web` directory and its `releases` and `shared` subdirectories. Ensure `shared/config` has the PHP-FPM group (`client0` for this site) and the setgid bit so the installed config inherits that group. The workflow installs `config.php` with mode `640` and does not attempt a privileged group change.
+For ISPConfig, the deployment account must be able to write to the website's `web` and `private` directories. Ensure `private/wondoo-deploy/shared/config` has the PHP-FPM group (`client0` for this site) and the setgid bit so the installed config inherits that group. The workflow installs `config.php` with mode `640` and does not attempt a privileged group change. Ensure PHP-FPM can write to `private/data` as required by the application. The workflow migrates an existing `web/shared/config/config.php` and copies existing data from `web/shared/data` or `web/data` to `private/data` on first deployment.
 
-Create `$DEPLOY_PATH/shared/config/config.php` from `config-sample.php`, with production database credentials and absolute runtime paths. Alternatively, add the complete PHP config file contents as the GitHub Environment secret `DEPLOY_CONFIG_PHP`; the workflow validates and installs it on first deploy and never overwrites an existing file.
+Create `$DEPLOY_PATH/../private/wondoo-deploy/shared/config/config.php` from `config-sample.php`, with production database credentials and absolute runtime paths. Alternatively, add the complete PHP config file contents as the GitHub Environment secret `DEPLOY_CONFIG_PHP`; the workflow validates and installs it on first deploy and never overwrites an existing file.
 
-- `path_data` → `$DEPLOY_PATH/shared/data`
-- Twig cache → `$DEPLOY_PATH/shared/data/cache`
+- `path_data` → `$DEPLOY_PATH/../private/data`
+- Twig cache → `$DEPLOY_PATH/../private/data/cache`
 - `url` → the public HTTPS URL
 - `force_https` → `true`
 - `debug` → `false`
 
 Never commit this file.
 
-Keep the ISPConfig document root unchanged at the website's `web` directory. The deployment workflow routes requests to the `current` release through the root `.htaccess`. Do not add a browser redirect to `/current/` or expose `releases` and `shared` over HTTP.
+Keep the ISPConfig document root unchanged at the website's `web` directory and leave its existing root `.htaccess` as it is. Do not add a browser redirect to `/current/`; the active release is outside the public web root.
 
 The application data directory must remain shared between releases; only source code rotates.
 
@@ -66,8 +66,8 @@ The workflow:
 2. creates a release archive
 3. uploads it through SSH
 4. extracts it into a timestamped release
-5. links shared `data` and `config.php`
-6. atomically switches `$DEPLOY_PATH/current`
+5. links private `data` and `config.php` into the release
+6. atomically switches `$DEPLOY_PATH/../private/wondoo-deploy/current`
 7. retains recent releases for manual rollback
 
 ## Rollback

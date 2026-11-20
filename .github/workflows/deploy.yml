@@ -98,6 +98,7 @@ jobs:
           ssh -p "$port" -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" \
             "DEPLOY_PATH='$DEPLOY_PATH' bash -s" <<'REMOTE'
           set -e
+          storage="$DEPLOY_PATH/../private/wondoo-deploy"
           case "$DEPLOY_PATH" in
             /*) ;;
             *) echo "DEPLOY_PATH must be an absolute path." >&2; exit 1 ;;
@@ -112,14 +113,20 @@ jobs:
             mkdir -p "$DEPLOY_PATH"
           fi
 
-          for path in "$DEPLOY_PATH" "$DEPLOY_PATH/releases" "$DEPLOY_PATH/shared" "$DEPLOY_PATH/shared/data" "$DEPLOY_PATH/shared/config"; do
+          private_parent="$(dirname "$storage")"
+          if [ ! -d "$private_parent" ] || [ ! -w "$private_parent" ]; then
+            echo "ISPConfig private directory is missing or not writable: $private_parent (SSH user: $(id -un)). Ask the administrator to grant the website user access." >&2
+            exit 1
+          fi
+
+          for path in "$DEPLOY_PATH" "$storage" "$storage/releases" "$storage/shared" "$storage/shared/config" "$private_parent/data"; do
             if [ -e "$path" ] && [ ! -w "$path" ]; then
               echo "Deployment path is not writable: $path (SSH user: $(id -un)). Have the server administrator assign this directory to the deploy user, or update DEPLOY_PATH to a writable location." >&2
               exit 1
             fi
           done
 
-          mkdir -p "$DEPLOY_PATH/releases" "$DEPLOY_PATH/shared/data" "$DEPLOY_PATH/shared/config"
+          mkdir -p "$storage/releases" "$storage/shared/config" "$private_parent/data"
           REMOTE
 
       - name: Ensure production config exists
@@ -146,7 +153,13 @@ jobs:
           ssh -p "$port" -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" \
             "DEPLOY_PATH='$DEPLOY_PATH' CONFIG_TMP='$remote_tmp' CONFIG_GROUP='${DEPLOY_WEB_GROUP:-www-data}' HAS_CONFIG_SECRET='${DEPLOY_CONFIG_PHP:+yes}' bash -s" <<'REMOTE'
           set -e
-          config="$DEPLOY_PATH/shared/config/config.php"
+          storage="$DEPLOY_PATH/../private/wondoo-deploy"
+          legacy_config="$DEPLOY_PATH/shared/config/config.php"
+          config="$storage/shared/config/config.php"
+          if [ ! -f "$config" ] && [ -f "$legacy_config" ]; then
+            install -m 640 "$legacy_config" "$config"
+            echo "Migrated the existing shared production config to ISPConfig private storage."
+          fi
           if [ -f "$config" ]; then
             php -l "$config" >/dev/null || {
               echo "Existing production config.php is invalid PHP; refusing to replace it." >&2
@@ -201,63 +214,79 @@ jobs:
           set -e
           archive="$ARCHIVE_PATH"
           trap 'rm -f "$archive"' EXIT
+          storage="$DEPLOY_PATH/../private/wondoo-deploy"
           release="releases/$(date -u +%Y%m%d%H%M%S)-${GITHUB_SHA:-manual}"
-          mkdir -p "$DEPLOY_PATH" "$DEPLOY_PATH/releases" "$DEPLOY_PATH/shared/data" "$DEPLOY_PATH/shared/config"
-          mkdir -p "$DEPLOY_PATH/$release"
-          tar -xzf "$archive" -C "$DEPLOY_PATH/$release"
+          mkdir -p "$DEPLOY_PATH" "$storage/releases" "$storage/shared/config" "$DEPLOY_PATH/../private/data"
+          mkdir -p "$storage/$release"
+          tar -xzf "$archive" -C "$storage/$release"
 
-          rm -rf "$DEPLOY_PATH/$release/data"
-          ln -s "$DEPLOY_PATH/shared/data" "$DEPLOY_PATH/$release/data"
+          rm -rf "$storage/$release/data"
+          ln -s "$DEPLOY_PATH/../private/data" "$storage/$release/data"
 
-          if [ -f "$DEPLOY_PATH/shared/config/config.php" ]; then
-            ln -s "$DEPLOY_PATH/shared/config/config.php" "$DEPLOY_PATH/$release/config.php"
+          if [ -f "$storage/shared/config/config.php" ]; then
+            ln -s "$storage/shared/config/config.php" "$storage/$release/config.php"
           else
-            echo "Missing $DEPLOY_PATH/shared/config/config.php" >&2
+            echo "Missing $storage/shared/config/config.php" >&2
             exit 1
           fi
 
           previous_release=""
-          if [ -L "$DEPLOY_PATH/current" ] && [ -e "$DEPLOY_PATH/current" ]; then
-            previous_release="$(readlink -f "$DEPLOY_PATH/current")"
-            ln -sfn "$previous_release" "$DEPLOY_PATH/previous"
+          if [ -L "$storage/current" ] && [ -e "$storage/current" ]; then
+            previous_release="$(readlink -f "$storage/current")"
+            ln -sfn "$previous_release" "$storage/previous"
           fi
 
-          # ISPConfig keeps the website document root fixed at DEPLOY_PATH. Route
-          # requests internally to the active release while keeping deployment
-          # data inaccessible over HTTP. The release retains FOSSBilling's own
-          # .htaccess file for application routing and security rules.
-          cat > "$DEPLOY_PATH/.htaccess" <<'HTACCESS'
-          Options -Indexes +SymLinksIfOwnerMatch
-          <IfModule mod_rewrite.c>
-              RewriteEngine On
-              RewriteRule ^(?:releases|shared)(?:/|$) - [F,NC,L]
-              RewriteCond %{THE_REQUEST} \s/+current(?:/|\?|\s) [NC]
-              RewriteRule ^current(?:/|$) - [F,NC,L]
-              RewriteRule ^current(?:/|$) - [L]
-              RewriteRule ^(.*)$ current/$1 [QSA,L]
-          </IfModule>
-          HTACCESS
+          shared_data="$DEPLOY_PATH/../private/data"
+          if [ -z "$(find "$shared_data" -mindepth 1 -print -quit)" ]; then
+            for legacy_data in "$DEPLOY_PATH/shared/data" "$DEPLOY_PATH/data"; do
+              if [ -d "$legacy_data" ] && [ ! -L "$legacy_data" ]; then
+                cp -a "$legacy_data/." "$shared_data/"
+              fi
+            done
+          fi
 
-          ln -sfn "$DEPLOY_PATH/$release" "$DEPLOY_PATH/current.next"
-          mv -Tf "$DEPLOY_PATH/current.next" "$DEPLOY_PATH/current"
+          # Keep ISPConfig's document root and its existing .htaccess untouched.
+          # Store releases outside the public web root, then expose application
+          # entries as symlinks through the stable current pointer.
+          shopt -s dotglob nullglob
+          for source in "$storage/$release"/*; do
+            entry="${source##*/}"
+            case "$entry" in
+              .htaccess|config.php|data) continue ;;
+            esac
+            link_target="../private/wondoo-deploy/current/$entry"
+            if [ "$(readlink "$DEPLOY_PATH/$entry" 2>/dev/null || true)" != "$link_target" ]; then
+              rm -rf "$DEPLOY_PATH/$entry"
+              ln -s "$link_target" "$DEPLOY_PATH/$entry"
+            fi
+          done
+          if [ "$(readlink "$DEPLOY_PATH/config.php" 2>/dev/null || true)" != "../private/wondoo-deploy/shared/config/config.php" ]; then
+            rm -rf "$DEPLOY_PATH/config.php"
+            ln -s ../private/wondoo-deploy/shared/config/config.php "$DEPLOY_PATH/config.php"
+          fi
+          ln -sfn "$storage/$release" "$storage/current.next"
+          mv -Tf "$storage/current.next" "$storage/current"
 
-          php -l "$DEPLOY_PATH/$release/index.php"
+          php -l "$storage/$release/index.php"
           if [ -n "$HEALTH_URL" ]; then
             if ! curl --fail --silent --show-error --location --max-time 20 "$HEALTH_URL" >/dev/null; then
               if [ -n "$previous_release" ]; then
-                ln -sfn "$previous_release" "$DEPLOY_PATH/current.next"
-                mv -Tf "$DEPLOY_PATH/current.next" "$DEPLOY_PATH/current"
+                ln -sfn "$previous_release" "$storage/current.next"
+                mv -Tf "$storage/current.next" "$storage/current"
                 echo "Health check failed; restored previous release $previous_release." >&2
               else
-                rm -f "$DEPLOY_PATH/current" "$DEPLOY_PATH/current.next"
-                echo "Health check failed; removed the first deployment's current symlink." >&2
+                echo "Health check failed on the first private-storage deployment; keeping the release active for diagnosis." >&2
               fi
               exit 1
             fi
           fi
 
-          kept="$(find "$DEPLOY_PATH/releases" -mindepth 1 -maxdepth 1 -type d | sort | tail -n 5)"
-          find "$DEPLOY_PATH/releases" -mindepth 1 -maxdepth 1 -type d | sort | while read -r old; do
+          # Remove the old public release layout only after the new private
+          # release passes its health check (or when no health URL is configured).
+          rm -rf "$DEPLOY_PATH/current" "$DEPLOY_PATH/previous" "$DEPLOY_PATH/releases" "$DEPLOY_PATH/shared" "$DEPLOY_PATH/data"
+
+          kept="$(find "$storage/releases" -mindepth 1 -maxdepth 1 -type d | sort | tail -n 5)"
+          find "$storage/releases" -mindepth 1 -maxdepth 1 -type d | sort | while read -r old; do
             if ! printf '%s\n' "$kept" | grep -Fxq "$old"; then rm -rf "$old"; fi
           done
           REMOTE
