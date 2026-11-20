@@ -45,6 +45,7 @@ jobs:
           tar \
             --exclude='.git' \
             --exclude='.github' \
+            --exclude='dist' \
             --exclude='.DS_Store' \
             --exclude='.env' \
             --exclude='.env.*' \

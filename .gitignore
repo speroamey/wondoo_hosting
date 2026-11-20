@@ -25,3 +25,6 @@ config.old.php
 .vscode/
 .idea/
 .qodo/
+
+# CI/CD build artifacts
+/dist/
